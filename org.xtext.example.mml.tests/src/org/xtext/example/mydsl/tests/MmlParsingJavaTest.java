@@ -39,6 +39,60 @@ public class MmlParsingJavaTest {
 				+ "CrossValidation { numRepetitionCross 70 }\n"
 				+ "precision\n"
 				+ "");
+		MMLModel result1 = parseHelper.parse("datainput \"foo.csv\"\n"
+				+ "mlframework scikit-learn\n"
+				+ "algorithm DT\n"
+				+ "TrainingTest { percentageTraining 10 }\n"
+				+ "recall\n"
+				+ "");
+		MMLModel result2 = parseHelper.parse("datainput \"foo.csv\"\n"
+				+ "mlframework scikit-learn\n"
+				+ "algorithm DT\n"
+				+ "TrainingTest { percentageTraining non }\n"
+				+ "recall\n"
+				+ "");
+		MMLModel result3 = parseHelper.parse("datainput \"foo.csv\"\n"
+				+ "mlframework scikit-learn\n"
+				+ "algorithm DT\n"
+				+ "TrainingTest { percentageTraining 70 }\n"
+				+ "precision\n"
+				+ "");
+		MMLModel result4 = parseHelper.parse("datainput \"foo.csv\"\n"
+				+ "mlframework scikit-learn\n"
+				+ "algorithm DT\n"
+				+ "CrossValidation { percentageTraining 70 }\n"
+				+ "accuracy\n"
+				+ "");
+		MMLModel result5 = parseHelper.parse("datainput \"foo.csv\"\n"
+				+ "mlframework scikit-learn\n"
+				+ "algorithm DT\n"
+				+ "CrossValidation { percentageTraining 70 }\n"
+				+ "F1\n"
+				+ "");
+		MMLModel result6 = parseHelper.parse("datainput \"foo.csv\"\n"
+				+ "mlframework scikit-learn\n"
+				+ "algorithm DT\n"
+				+ "TrainingTest { percentageTraining 70 }\n"
+				+ "F1\n"
+				+ "");
+		MMLModel result7 = parseHelper.parse("datainput \"foo.csv\"\n"
+				+ "mlframework scikit-learn\n"
+				+ "algorithm DT\n"
+				+ "TrainingTest { percentageTraining 10 }\n"
+				+ "F1\n"
+				+ "");
+		MMLModel result8 = parseHelper.parse("datainput \"foo.csv\"\n"
+				+ "mlframework scikit-learn\n"
+				+ "algorithm DT\n"
+				+ "TrainingTest { percentageTraining non }\n"
+				+ "F1\n"
+				+ "");
+		MMLModel result9 = parseHelper.parse("datainput \"foo.csv\"\n"
+				+ "mlframework scikit-learn\n"
+				+ "algorithm RF\n"
+				+ "CrossValidation { percentageTraining 10 }\n"
+				+ "accuracy\n"
+				+ "");
 		Assertions.assertNotNull(result);
 		EList<Resource.Diagnostic> errors = result.eResource().getErrors();
 		Assertions.assertTrue(errors.isEmpty(), "Unexpected errors");			
