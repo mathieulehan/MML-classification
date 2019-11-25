@@ -1,7 +1,11 @@
 package org.xtext.example.mydsl.tests;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.eclipse.emf.common.util.EList;
@@ -18,6 +22,8 @@ import org.xtext.example.mydsl.mml.MMLModel;
 
 import com.google.common.io.Files;
 import com.google.inject.Inject;
+
+import junit.framework.Assert;
 
 @ExtendWith(InjectionExtension.class)
 @InjectWith(MmlInjectorProvider.class)
@@ -74,17 +80,36 @@ public class MmlParsingJavaTest {
 		 * Calling generated Python script (basic solution through systems call)
 		 * we assume that "python" is in the path
 		 */
-		Process p = Runtime.getRuntime().exec("python mml.py");
-		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-		String line; 
-		while ((line = in.readLine()) != null) {
-			System.out.println(line);
-	    }
-
-		
-		
+		try	{
+			Process p = Runtime.getRuntime().exec("python mml.py");
+			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String line; 
+			int index = 0;
+			while ((line = in.readLine()) != null) {
+				System.out.println(line);
+				assertEquals(false, line.isEmpty());
+				switch (index) {
+				case 0:
+					assertEquals("      colonne 1 ,colonne 2", line);
+					break;
+				case 1:
+					assertEquals("0  cellule 1 1,cellule 1 2", line);
+					break;
+				case 2:
+					assertEquals("1  cellule 2 1,cellule 2 2", line);
+					break;
+				default:
+					Assert.fail("Error while reading program results");
+					break;
+				}
+				index++;
+		    }
+		}
+		catch (IOException e) {
+			Assert.fail("Error during program execution");
+		}
 	}
-
+	
 	private String mkValueInSingleQuote(String val) {
 		return "'" + val + "'";
 	}
