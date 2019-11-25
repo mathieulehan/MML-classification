@@ -34,11 +34,10 @@ public class MmlParsingJavaTest {
 	
 	@Test
 	public void loadModel() throws Exception {
-		MMLModel result = parseHelper.parse("datainput \"foo.csv\"\n"
-				+ "mlframework scikit-learn\n"
+		MMLModel result = parseHelper.parse("datainput \"foo.csv\" mlframework scikit-learn\n"
 				+ "algorithm DT\n"
-				+ "TrainingTest { percentageTraining 70 }\n"
-				+ "recall\n"
+				+ "CrossValidation { numRepetitionCross 70 }\n"
+				+ "precision\n"
 				+ "");
 		Assertions.assertNotNull(result);
 		EList<Resource.Diagnostic> errors = result.eResource().getErrors();
@@ -49,11 +48,11 @@ public class MmlParsingJavaTest {
 	
 	@Test
 	public void compileDataInput() throws Exception {
-		MMLModel result = parseHelper.parse("datainput \"foo2.csv\" separator ;\n"
+		MMLModel result = parseHelper.parse("datainput \"foo2.csv\" separator ,\n"
 				+ "mlframework scikit-learn\n"
 				+ "algorithm DT\n"
-				+ "TrainingTest { percentageTraining 70 }\n"
-				+ "recall\n"
+				+ "CrossValidation { numRepetitionCross 70 }\n"
+				+ "precision\n"
 				+ "");
 		DataInput dataInput = result.getInput();
 		String fileLocation = dataInput.getFilelocation();
@@ -90,13 +89,13 @@ public class MmlParsingJavaTest {
 				assertEquals(false, line.isEmpty());
 				switch (index) {
 				case 0:
-					assertEquals("      colonne 1 ,colonne 2", line);
+					assertEquals("    colonne 1     colonne 2", line);
 					break;
 				case 1:
-					assertEquals("0  cellule 1 1,cellule 1 2", line);
+					assertEquals("0  cellule 1 1  cellule 1 2", line);
 					break;
 				case 2:
-					assertEquals("1  cellule 2 1,cellule 2 2", line);
+					assertEquals("1  cellule 2 1  cellule 2 2", line);
 					break;
 				default:
 					Assert.fail("Error while reading program results");
