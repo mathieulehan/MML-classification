@@ -7,6 +7,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -102,64 +104,78 @@ public class MmlParsingJavaTest {
 	
 	@Test
 	public void compileDataInput() throws Exception {
-		MMLModel result = parseHelper.parse("datainput \"foo2.csv\" separator ,\n"
+		List<MMLModel> models = new ArrayList<>();
+		MMLModel result1 = parseHelper.parse("datainput \"foo2.csv\" separator ,\n"
 				+ "mlframework scikit-learn\n"
 				+ "algorithm DT\n"
 				+ "CrossValidation { numRepetitionCross 70 }\n"
 				+ "precision\n"
 				+ "");
-		DataInput dataInput = result.getInput();
-		String fileLocation = dataInput.getFilelocation();
-	
+		MMLModel result2 = parseHelper.parse("datainput \"foo2.csv\" separator ,\n"
+				+ "mlframework scikit-learn\n"
+				+ "algorithm DT\n"
+				+ "CrossValidation { numRepetitionCross 70 }\n"
+				+ "precision\n"
+				+ "");
+		models.add(result1);
+		models.add(result2);
+		int indexModel = 1;
 		
-		String pythonImport = "import pandas as pd\n"; 
-		String DEFAULT_COLUMN_SEPARATOR = ","; // by default
-		String csv_separator = DEFAULT_COLUMN_SEPARATOR;
-		CSVParsingConfiguration parsingInstruction = dataInput.getParsingInstruction();
-		if (parsingInstruction != null) {			
-			System.err.println("parsing instruction..." + parsingInstruction);
-			csv_separator = parsingInstruction.getSep().toString();
-		}
-		String csvReading = "mml_data = pd.read_csv(" + mkValueInSingleQuote(fileLocation) + ", sep=" + mkValueInSingleQuote(csv_separator) + ")";						
-		String pandasCode = pythonImport + csvReading;
+		for (MMLModel result : models) {
+			DataInput dataInput = result.getInput();
+			String fileLocation = dataInput.getFilelocation();
 		
-		pandasCode += "\nprint (mml_data)\n"; 
-		
-		Files.write(pandasCode.getBytes(), new File("mml.py"));
-		// end of Python generation
-		
-		
-		/*
-		 * Calling generated Python script (basic solution through systems call)
-		 * we assume that "python" is in the path
-		 */
-		try	{
-			Process p = Runtime.getRuntime().exec("python mml.py");
-			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			String line; 
-			int index = 0;
-			while ((line = in.readLine()) != null) {
-				System.out.println(line);
-				assertEquals(false, line.isEmpty());
-				switch (index) {
-				case 0:
-					assertEquals("    colonne 1     colonne 2", line);
-					break;
-				case 1:
-					assertEquals("0  cellule 1 1  cellule 1 2", line);
-					break;
-				case 2:
-					assertEquals("1  cellule 2 1  cellule 2 2", line);
-					break;
-				default:
-					Assert.fail("Error while reading program results");
-					break;
-				}
-				index++;
-		    }
-		}
-		catch (IOException e) {
-			Assert.fail("Error during program execution");
+			
+			String pythonImport = "import pandas as pd\n"; 
+			String DEFAULT_COLUMN_SEPARATOR = ","; // by default
+			String csv_separator = DEFAULT_COLUMN_SEPARATOR;
+			CSVParsingConfiguration parsingInstruction = dataInput.getParsingInstruction();
+			if (parsingInstruction != null) {			
+				System.err.println("parsing instruction..." + parsingInstruction);
+				csv_separator = parsingInstruction.getSep().toString();
+			}
+			String csvReading = "mml_data = pd.read_csv(" + mkValueInSingleQuote(fileLocation) + ", sep=" + mkValueInSingleQuote(csv_separator) + ")";						
+			String pandasCode = pythonImport + csvReading;
+			
+			pandasCode += "\nprint (mml_data)\n"; 
+			
+			Files.write(pandasCode.getBytes(), new File("mml"+indexModel+".py"));
+			// end of Python generation
+			
+			
+			/*
+			 * Calling generated Python script (basic solution through systems call)
+			 * we assume that "python" is in the path
+			 */
+			try	{
+				Process p = Runtime.getRuntime().exec("python mml"+indexModel+".py");
+				BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+				String line; 
+				int index = 0;
+				while ((line = in.readLine()) != null) {
+					System.out.println(line);
+					assertEquals(false, line.isEmpty());
+					switch (index) {
+					case 0:
+						assertEquals("    colonne 1     colonne 2", line);
+						break;
+					case 1:
+						assertEquals("0  cellule 1 1  cellule 1 2", line);
+						break;
+					case 2:
+						assertEquals("1  cellule 2 1  cellule 2 2", line);
+						break;
+					default:
+						Assert.fail("Error while reading mml"+indexModel+" results");
+						break;
+					}
+					index++;
+			    }
+			}
+			catch (IOException e) {
+				Assert.fail("Error during mml"+indexModel+" execution");
+			}
+			indexModel++;
 		}
 	}
 	
