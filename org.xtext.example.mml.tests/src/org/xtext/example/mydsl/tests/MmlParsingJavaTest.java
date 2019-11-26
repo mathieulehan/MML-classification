@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -36,69 +37,84 @@ public class MmlParsingJavaTest {
 	
 	@Test
 	public void loadModel() throws Exception {
+		List<MMLModel> listResult = new ArrayList();
 		MMLModel result = parseHelper.parse("datainput \"foo.csv\" mlframework scikit-learn\n"
 				+ "algorithm DT\n"
 				+ "CrossValidation { numRepetitionCross 70 }\n"
 				+ "precision\n"
 				+ "");
+		listResult.add(result);
 		MMLModel result1 = parseHelper.parse("datainput \"foo.csv\"\n"
 				+ "mlframework scikit-learn\n"
 				+ "algorithm DT\n"
 				+ "TrainingTest { percentageTraining 10 }\n"
 				+ "recall\n"
 				+ "");
+		listResult.add(result1);
 		MMLModel result2 = parseHelper.parse("datainput \"foo.csv\"\n"
 				+ "mlframework scikit-learn\n"
-				+ "algorithm DT\n"
-				+ "TrainingTest { percentageTraining non }\n"
+				+ "algorithm RF\n"
+				+ "TrainingTest { percentageTraining 50 }\n"
 				+ "recall\n"
 				+ "");
+		listResult.add(result2);
 		MMLModel result3 = parseHelper.parse("datainput \"foo.csv\"\n"
 				+ "mlframework scikit-learn\n"
 				+ "algorithm DT\n"
 				+ "TrainingTest { percentageTraining 70 }\n"
-				+ "precision\n"
+				+ "accuracy\n"
 				+ "");
+		listResult.add(result3);
 		MMLModel result4 = parseHelper.parse("datainput \"foo.csv\"\n"
 				+ "mlframework scikit-learn\n"
 				+ "algorithm DT\n"
 				+ "CrossValidation { percentageTraining 70 }\n"
 				+ "accuracy\n"
 				+ "");
+		listResult.add(result4);
 		MMLModel result5 = parseHelper.parse("datainput \"foo.csv\"\n"
 				+ "mlframework scikit-learn\n"
 				+ "algorithm DT\n"
 				+ "CrossValidation { percentageTraining 70 }\n"
 				+ "F1\n"
 				+ "");
+		listResult.add(result5);
 		MMLModel result6 = parseHelper.parse("datainput \"foo.csv\"\n"
 				+ "mlframework scikit-learn\n"
 				+ "algorithm DT\n"
 				+ "TrainingTest { percentageTraining 70 }\n"
 				+ "F1\n"
 				+ "");
+		listResult.add(result6);
 		MMLModel result7 = parseHelper.parse("datainput \"foo.csv\"\n"
 				+ "mlframework scikit-learn\n"
 				+ "algorithm DT\n"
 				+ "TrainingTest { percentageTraining 10 }\n"
 				+ "F1\n"
 				+ "");
+		listResult.add(result7);
 		MMLModel result8 = parseHelper.parse("datainput \"foo.csv\"\n"
 				+ "mlframework scikit-learn\n"
-				+ "algorithm DT\n"
-				+ "TrainingTest { percentageTraining non }\n"
+				+ "algorithm RF\n"
+				+ "TrainingTest { percentageTraining 70 }\n"
 				+ "F1\n"
 				+ "");
+		listResult.add(result8);
 		MMLModel result9 = parseHelper.parse("datainput \"foo.csv\"\n"
 				+ "mlframework scikit-learn\n"
 				+ "algorithm RF\n"
 				+ "CrossValidation { percentageTraining 10 }\n"
 				+ "accuracy\n"
 				+ "");
-		Assertions.assertNotNull(result);
-		EList<Resource.Diagnostic> errors = result.eResource().getErrors();
-		Assertions.assertTrue(errors.isEmpty(), "Unexpected errors");			
-		Assertions.assertEquals("foo.csv", result.getInput().getFilelocation());			
+		listResult.add(result9);
+		ListIterator<MMLModel> it = listResult.listIterator();
+	    while(it.hasNext()){
+	    	System.out.println(it.next());
+	    	Assertions.assertNotNull(it.next());
+	    	EList<Resource.Diagnostic> errors = it.next().eResource().getErrors();
+			Assertions.assertTrue(errors.isEmpty(), "Unexpected errors");			
+			Assertions.assertEquals("foo.csv", it.next().getInput().getFilelocation());
+	    }
 		
 	}		
 	
