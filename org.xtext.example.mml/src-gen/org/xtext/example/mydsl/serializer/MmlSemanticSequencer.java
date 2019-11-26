@@ -279,7 +279,12 @@ public class MmlSemanticSequencer extends AbstractDelegatingSemanticSequencer {
 	 *     SVM returns SVM
 	 *
 	 * Constraint:
-	 *     (gamma=FLOAT? C=FLOAT? kernel=SVMKernel? svmclassification=SVMClassification?)
+	 *     (
+	 *         gamma=FLOAT? 
+	 *         C=FLOAT? 
+	 *         (kernelSpecified?='kernel=' kernel=SVMKernel)? 
+	 *         (classificationSpecified?='classification' svmclassification=SVMClassification)?
+	 *     )
 	 */
 	protected void sequence_SVM(ISerializationContext context, SVM semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
