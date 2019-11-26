@@ -4,7 +4,7 @@ generate mml "http://www.xtext.org/example/mydsl/Mml"
 
 MMLModel:
 	input=DataInput
-	algorithm=MLChoiceAlgorithm
+	algorithms+=MLChoiceAlgorithm+
 	formula=RFormula?
 	validation=Validation
 	;

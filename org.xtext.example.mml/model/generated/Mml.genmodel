@@ -33,7 +33,7 @@
     </genEnums>
     <genClasses ecoreClass="Mml.ecore#//MMLModel">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Mml.ecore#//MMLModel/input"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Mml.ecore#//MMLModel/algorithm"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Mml.ecore#//MMLModel/algorithms"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Mml.ecore#//MMLModel/formula"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Mml.ecore#//MMLModel/validation"/>
     </genClasses>

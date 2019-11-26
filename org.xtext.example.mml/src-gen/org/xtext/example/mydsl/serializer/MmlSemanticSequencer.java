@@ -228,7 +228,7 @@ public class MmlSemanticSequencer extends AbstractDelegatingSemanticSequencer {
 	 *     MMLModel returns MMLModel
 	 *
 	 * Constraint:
-	 *     (input=DataInput algorithm=MLChoiceAlgorithm formula=RFormula? validation=Validation)
+	 *     (input=DataInput algorithms+=MLChoiceAlgorithm+ formula=RFormula? validation=Validation)
 	 */
 	protected void sequence_MMLModel(ISerializationContext context, MMLModel semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);

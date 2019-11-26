@@ -99,22 +99,22 @@ ruleMMLModel returns [EObject current=null]
 		(
 			(
 				{
-					newCompositeNode(grammarAccess.getMMLModelAccess().getAlgorithmMLChoiceAlgorithmParserRuleCall_1_0());
+					newCompositeNode(grammarAccess.getMMLModelAccess().getAlgorithmsMLChoiceAlgorithmParserRuleCall_1_0());
 				}
-				lv_algorithm_1_0=ruleMLChoiceAlgorithm
+				lv_algorithms_1_0=ruleMLChoiceAlgorithm
 				{
 					if ($current==null) {
 						$current = createModelElementForParent(grammarAccess.getMMLModelRule());
 					}
-					set(
+					add(
 						$current,
-						"algorithm",
-						lv_algorithm_1_0,
+						"algorithms",
+						lv_algorithms_1_0,
 						"org.xtext.example.mydsl.Mml.MLChoiceAlgorithm");
 					afterParserOrEnumRuleCall();
 				}
 			)
-		)
+		)+
 		(
 			(
 				{

@@ -31,8 +31,8 @@ public class MmlGrammarAccess extends AbstractGrammarElementFinder {
 		private final Group cGroup = (Group)rule.eContents().get(1);
 		private final Assignment cInputAssignment_0 = (Assignment)cGroup.eContents().get(0);
 		private final RuleCall cInputDataInputParserRuleCall_0_0 = (RuleCall)cInputAssignment_0.eContents().get(0);
-		private final Assignment cAlgorithmAssignment_1 = (Assignment)cGroup.eContents().get(1);
-		private final RuleCall cAlgorithmMLChoiceAlgorithmParserRuleCall_1_0 = (RuleCall)cAlgorithmAssignment_1.eContents().get(0);
+		private final Assignment cAlgorithmsAssignment_1 = (Assignment)cGroup.eContents().get(1);
+		private final RuleCall cAlgorithmsMLChoiceAlgorithmParserRuleCall_1_0 = (RuleCall)cAlgorithmsAssignment_1.eContents().get(0);
 		private final Assignment cFormulaAssignment_2 = (Assignment)cGroup.eContents().get(2);
 		private final RuleCall cFormulaRFormulaParserRuleCall_2_0 = (RuleCall)cFormulaAssignment_2.eContents().get(0);
 		private final Assignment cValidationAssignment_3 = (Assignment)cGroup.eContents().get(3);
@@ -40,12 +40,12 @@ public class MmlGrammarAccess extends AbstractGrammarElementFinder {
 		
 		//MMLModel:
 		//	input=DataInput
-		//	algorithm=MLChoiceAlgorithm
+		//	algorithms+=MLChoiceAlgorithm+
 		//	formula=RFormula?
 		//	validation=Validation;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//input=DataInput algorithm=MLChoiceAlgorithm formula=RFormula? validation=Validation
+		//input=DataInput algorithms+=MLChoiceAlgorithm+ formula=RFormula? validation=Validation
 		public Group getGroup() { return cGroup; }
 		
 		//input=DataInput
@@ -54,11 +54,11 @@ public class MmlGrammarAccess extends AbstractGrammarElementFinder {
 		//DataInput
 		public RuleCall getInputDataInputParserRuleCall_0_0() { return cInputDataInputParserRuleCall_0_0; }
 		
-		//algorithm=MLChoiceAlgorithm
-		public Assignment getAlgorithmAssignment_1() { return cAlgorithmAssignment_1; }
+		//algorithms+=MLChoiceAlgorithm+
+		public Assignment getAlgorithmsAssignment_1() { return cAlgorithmsAssignment_1; }
 		
 		//MLChoiceAlgorithm
-		public RuleCall getAlgorithmMLChoiceAlgorithmParserRuleCall_1_0() { return cAlgorithmMLChoiceAlgorithmParserRuleCall_1_0; }
+		public RuleCall getAlgorithmsMLChoiceAlgorithmParserRuleCall_1_0() { return cAlgorithmsMLChoiceAlgorithmParserRuleCall_1_0; }
 		
 		//formula=RFormula?
 		public Assignment getFormulaAssignment_2() { return cFormulaAssignment_2; }
@@ -924,7 +924,7 @@ public class MmlGrammarAccess extends AbstractGrammarElementFinder {
 	
 	//MMLModel:
 	//	input=DataInput
-	//	algorithm=MLChoiceAlgorithm
+	//	algorithms+=MLChoiceAlgorithm+
 	//	formula=RFormula?
 	//	validation=Validation;
 	public MMLModelElements getMMLModelAccess() {

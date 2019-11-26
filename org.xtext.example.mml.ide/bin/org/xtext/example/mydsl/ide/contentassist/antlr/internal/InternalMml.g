@@ -922,9 +922,16 @@ rule__MMLModel__Group__1__Impl
 	}
 :
 (
-	{ before(grammarAccess.getMMLModelAccess().getAlgorithmAssignment_1()); }
-	(rule__MMLModel__AlgorithmAssignment_1)
-	{ after(grammarAccess.getMMLModelAccess().getAlgorithmAssignment_1()); }
+	(
+		{ before(grammarAccess.getMMLModelAccess().getAlgorithmsAssignment_1()); }
+		(rule__MMLModel__AlgorithmsAssignment_1)
+		{ after(grammarAccess.getMMLModelAccess().getAlgorithmsAssignment_1()); }
+	)
+	(
+		{ before(grammarAccess.getMMLModelAccess().getAlgorithmsAssignment_1()); }
+		(rule__MMLModel__AlgorithmsAssignment_1)*
+		{ after(grammarAccess.getMMLModelAccess().getAlgorithmsAssignment_1()); }
+	)
 )
 ;
 finally {
@@ -2465,15 +2472,15 @@ finally {
 	restoreStackSize(stackSize);
 }
 
-rule__MMLModel__AlgorithmAssignment_1
+rule__MMLModel__AlgorithmsAssignment_1
 	@init {
 		int stackSize = keepStackSize();
 	}
 :
 	(
-		{ before(grammarAccess.getMMLModelAccess().getAlgorithmMLChoiceAlgorithmParserRuleCall_1_0()); }
+		{ before(grammarAccess.getMMLModelAccess().getAlgorithmsMLChoiceAlgorithmParserRuleCall_1_0()); }
 		ruleMLChoiceAlgorithm
-		{ after(grammarAccess.getMMLModelAccess().getAlgorithmMLChoiceAlgorithmParserRuleCall_1_0()); }
+		{ after(grammarAccess.getMMLModelAccess().getAlgorithmsMLChoiceAlgorithmParserRuleCall_1_0()); }
 	)
 ;
 finally {

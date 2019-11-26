@@ -295,7 +295,7 @@ public class MmlPackageImpl extends EPackageImpl implements MmlPackage
    * @generated
    */
   @Override
-  public EReference getMMLModel_Algorithm()
+  public EReference getMMLModel_Algorithms()
   {
     return (EReference)mmlModelEClass.getEStructuralFeatures().get(1);
   }
@@ -806,7 +806,7 @@ public class MmlPackageImpl extends EPackageImpl implements MmlPackage
     // Create classes and their features
     mmlModelEClass = createEClass(MML_MODEL);
     createEReference(mmlModelEClass, MML_MODEL__INPUT);
-    createEReference(mmlModelEClass, MML_MODEL__ALGORITHM);
+    createEReference(mmlModelEClass, MML_MODEL__ALGORITHMS);
     createEReference(mmlModelEClass, MML_MODEL__FORMULA);
     createEReference(mmlModelEClass, MML_MODEL__VALIDATION);
 
@@ -912,7 +912,7 @@ public class MmlPackageImpl extends EPackageImpl implements MmlPackage
     // Initialize classes and features; add operations and parameters
     initEClass(mmlModelEClass, MMLModel.class, "MMLModel", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEReference(getMMLModel_Input(), this.getDataInput(), null, "input", null, 0, 1, MMLModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getMMLModel_Algorithm(), this.getMLChoiceAlgorithm(), null, "algorithm", null, 0, 1, MMLModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getMMLModel_Algorithms(), this.getMLChoiceAlgorithm(), null, "algorithms", null, 0, -1, MMLModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getMMLModel_Formula(), this.getRFormula(), null, "formula", null, 0, 1, MMLModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getMMLModel_Validation(), this.getValidation(), null, "validation", null, 0, 1, MMLModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 

@@ -4,8 +4,8 @@
   <eClassifiers xsi:type="ecore:EClass" name="MMLModel">
     <eStructuralFeatures xsi:type="ecore:EReference" name="input" eType="#//DataInput"
         containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="algorithm" eType="#//MLChoiceAlgorithm"
-        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="algorithms" upperBound="-1"
+        eType="#//MLChoiceAlgorithm" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="formula" eType="#//RFormula"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="validation" eType="#//Validation"

@@ -63,7 +63,7 @@ public class MmlParser extends AbstractContentAssistParser {
 			builder.put(grammarAccess.getCrossValidationAccess().getGroup(), "rule__CrossValidation__Group__0");
 			builder.put(grammarAccess.getTrainingTestAccess().getGroup(), "rule__TrainingTest__Group__0");
 			builder.put(grammarAccess.getMMLModelAccess().getInputAssignment_0(), "rule__MMLModel__InputAssignment_0");
-			builder.put(grammarAccess.getMMLModelAccess().getAlgorithmAssignment_1(), "rule__MMLModel__AlgorithmAssignment_1");
+			builder.put(grammarAccess.getMMLModelAccess().getAlgorithmsAssignment_1(), "rule__MMLModel__AlgorithmsAssignment_1");
 			builder.put(grammarAccess.getMMLModelAccess().getFormulaAssignment_2(), "rule__MMLModel__FormulaAssignment_2");
 			builder.put(grammarAccess.getMMLModelAccess().getValidationAssignment_3(), "rule__MMLModel__ValidationAssignment_3");
 			builder.put(grammarAccess.getDataInputAccess().getFilelocationAssignment_1(), "rule__DataInput__FilelocationAssignment_1");

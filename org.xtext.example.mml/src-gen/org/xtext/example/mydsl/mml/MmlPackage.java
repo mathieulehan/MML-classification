@@ -78,13 +78,13 @@ public interface MmlPackage extends EPackage
   int MML_MODEL__INPUT = 0;
 
   /**
-   * The feature id for the '<em><b>Algorithm</b></em>' containment reference.
+   * The feature id for the '<em><b>Algorithms</b></em>' containment reference list.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int MML_MODEL__ALGORITHM = 1;
+  int MML_MODEL__ALGORITHMS = 1;
 
   /**
    * The feature id for the '<em><b>Formula</b></em>' containment reference.
@@ -698,15 +698,15 @@ public interface MmlPackage extends EPackage
   EReference getMMLModel_Input();
 
   /**
-   * Returns the meta object for the containment reference '{@link org.xtext.example.mydsl.mml.MMLModel#getAlgorithm <em>Algorithm</em>}'.
+   * Returns the meta object for the containment reference list '{@link org.xtext.example.mydsl.mml.MMLModel#getAlgorithms <em>Algorithms</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the containment reference '<em>Algorithm</em>'.
-   * @see org.xtext.example.mydsl.mml.MMLModel#getAlgorithm()
+   * @return the meta object for the containment reference list '<em>Algorithms</em>'.
+   * @see org.xtext.example.mydsl.mml.MMLModel#getAlgorithms()
    * @see #getMMLModel()
    * @generated
    */
-  EReference getMMLModel_Algorithm();
+  EReference getMMLModel_Algorithms();
 
   /**
    * Returns the meta object for the containment reference '{@link org.xtext.example.mydsl.mml.MMLModel#getFormula <em>Formula</em>}'.
@@ -1201,12 +1201,12 @@ public interface MmlPackage extends EPackage
     EReference MML_MODEL__INPUT = eINSTANCE.getMMLModel_Input();
 
     /**
-     * The meta object literal for the '<em><b>Algorithm</b></em>' containment reference feature.
+     * The meta object literal for the '<em><b>Algorithms</b></em>' containment reference list feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EReference MML_MODEL__ALGORITHM = eINSTANCE.getMMLModel_Algorithm();
+    EReference MML_MODEL__ALGORITHMS = eINSTANCE.getMMLModel_Algorithms();
 
     /**
      * The meta object literal for the '<em><b>Formula</b></em>' containment reference feature.
