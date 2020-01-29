@@ -94,6 +94,7 @@ public class MmlParsingJavaTest {
 						
 				String DEFAULT_COLUMN_SEPARATOR = ","; 
 				String csv_separator = DEFAULT_COLUMN_SEPARATOR;
+				
 				if (parsingInstruction != null) {			
 					System.err.println("parsing instruction..." + parsingInstruction);
 					csv_separator = parsingInstruction.getSep().toString();
