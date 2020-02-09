@@ -55,8 +55,8 @@ public class MmlParsingJavaTest {
 		for (MMLModel result : listMmlFiles){
 			DataInput dataInput = result.getInput();
 			String fileLocation = dataInput.getFilelocation();
-		
 			
+			if(mlFramework.equal("scikit-learn")) {
 			String pythonImport = "import pandas as pd\n"; 
 			String DEFAULT_COLUMN_SEPARATOR = ","; // by default
 			String csv_separator = DEFAULT_COLUMN_SEPARATOR;
@@ -68,47 +68,81 @@ public class MmlParsingJavaTest {
 			String csvReading = "mml_data = pd.read_csv(" + mkValueInSingleQuote(fileLocation) + ", sep=" + mkValueInSingleQuote(csv_separator) + ")";						
 			String pandasCode = pythonImport + csvReading;
 			
+	
 			pandasCode += "\nprint (mml_data)\n"; 
-			
+
 			Files.write(pandasCode.getBytes(), new File("mml"+indexModel+".py"));
 			// end of Python generation
 			
+		
 			
-			/*
-			 * Calling generated Python script (basic solution through systems call)
-			 * we assume that "python" is in the path
-			 */
-			try {
-				Process p = Runtime.getRuntime().exec("python mml"+indexModel+".py");
-				BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-				String line; 
-				int index = 0;
-				while ((line = in.readLine()) != null) {
-					System.out.println(line);
-					assertEquals(false, line.isEmpty());
-					switch (index) {
-					case 0:
-						assertEquals("    colonne 1     colonne 2", line);
-						break;
-					case 1:
-						assertEquals("0  cellule 1 1  cellule 1 2", line);
-						break;
-					case 2:
-						assertEquals("1  cellule 2 1  cellule 2 2", line);
-						break;
-					default:
-						Assert.fail("Error while reading mml"+indexModel+" results");
-						break;
-					}
-					index++;
-				}
 			}
-			catch(IOException e){
-				Assert.fail("Error during mml"+indexModel+" execution");
+			else if(mlFramework.equal("R")) {
+				String rImport = "library(rpart)"
+				String DEFAULT_COLUMN_SEPARATOR = ","; 
+				String csv_separator = DEFAULT_COLUMN_SEPARATOR;
+				if (parsingInstruction != null) {			
+					System.err.println("parsing instruction..." + parsingInstruction);
+					csv_separator = parsingInstruction.getSep().toString();
+				}
+				String csvReading = "data <- read.csv(\""+fileLocation+"\", header = FALSE, sep = \""+csv_separator+"\")";
+				String rCode = rImport + csvReading;
+				rCode += //trouver a afficher en R
+				Files.write(rCode.getBytes(), new File("mml"+indexModel+".???????"));
+			}else if(mlFramework.equal("Weka")) {
+				String wikaImport = "import wekaexamples.helper as helper "+ "from weka.core.converters import Loader";
+						
+				String DEFAULT_COLUMN_SEPARATOR = ","; 
+				String csv_separator = DEFAULT_COLUMN_SEPARATOR;
+				
+				
+				if (parsingInstruction != null) {			
+					System.err.println("parsing instruction..." + parsingInstruction);
+					csv_separator = parsingInstruction.getSep().toString();
+				}
+				String loader = "loader = Loader(classname=\"weka.core.converters.CSVLoader\")"
+				String csvReading = "mml_data = loader.load_file(helper.get_data_dir() + " + csv_separator +" + "+ mkValueInSingleQuote(fileLocation))";
+				String wekaCode = wikaImport + loader + csvReading;
+				wekaCode += "print(str(mml_data))"
+				Files.write(wekaCode.getBytes(), new File("mml"+indexModel+".py"));
+			}
+	
+		
+		
+		/*
+		 * Calling generated Python script (basic solution through systems call)
+		 * we assume that "python" is in the path
+		 */
+		try {
+			Process p = Runtime.getRuntime().exec("python mml"+indexModel+".py");
+			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String line; 
+			int index = 0;
+			while ((line = in.readLine()) != null) {
+				System.out.println(line);
+				assertEquals(false, line.isEmpty());
+				switch (index) {
+				case 0:
+					assertEquals("    colonne 1     colonne 2", line);
+					break;
+				case 1:
+					assertEquals("0  cellule 1 1  cellule 1 2", line);
+					break;
+				case 2:
+					assertEquals("1  cellule 2 1  cellule 2 2", line);
+					break;
+				default:
+					Assert.fail("Error while reading mml"+indexModel+" results");
+					break;
+				}
+				index++;
 			}
 		}
+		catch(IOException e){
+			Assert.fail("Error during mml"+indexModel+" execution");
+		}
 		indexModel++;
-		
+		}
 	}
 
 	private String mkValueInSingleQuote(String val) {
