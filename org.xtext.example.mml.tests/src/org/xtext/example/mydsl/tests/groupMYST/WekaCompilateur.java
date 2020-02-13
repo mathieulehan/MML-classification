@@ -134,7 +134,6 @@ public class WekaCompilateur implements Compilateur {
 	}
 	
 	String wekaCode = wikaImport + loader + csvReading + predictivestr +predictorstr + algostr + val + metric +  affiche  ;
-	wekaCode += "print(str(mml_data))";
 	Long date = new Date().getTime();
 	Files.write(wekaCode.getBytes(), new File("mml_weka_"+date+".py"));
 		
