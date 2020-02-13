@@ -41,23 +41,23 @@ public class RCompilateur implements Compilateur{
 		
 		String predictorstr ="";
 		
-		String algo ="";
+		String algostr ="";
 		switch(algo.toString()) {
 		  case "SVM":
 			  //TODO
-			  algo = "";
+			  algostr = "";
 		    break;
 		  case "DT":
 			  //TODO
-			  algo = "";
+			  algostr = "";
 		    break;
 		  case "RandomForest":
 			  //TODO
-			  algo = "";
+			  algostr = "";
 			    break;
 		  case "LogisticRegression":
 			  //TODO
-			  algo = "";
+			  algostr = "";
 			    break;
 		}
 	
@@ -119,7 +119,7 @@ public class RCompilateur implements Compilateur{
 		
 
 		
-		String rCode = rImport + csvReading + predictivestr +predictorstr  + algo + val + metric;
+		String rCode = rImport + csvReading + predictivestr +predictorstr  + algostr + val + metric;
 		//TODO
 		rCode += ""; //trouver a afficher en R
 		//TODO

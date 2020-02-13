@@ -31,29 +31,38 @@ public class ScikitLearnCompilateur implements Compilateur {
 		String csvReading = "mml_data = pd.read_csv(" + mkValueInSingleQuote(dataInput.getFilelocation()) + ", sep=" + 
 		mkValueInSingleQuote(separator) + ")";	
 		
-		//TODO
-		String predictor = "";
+		String predictivestr = "";
+		if (predictive.getColName() != null && predictive.getColName()!= "") {
+			//TODO
+			predictivestr = ""+"/n";
+		}else {
+			//dernière colonne predictive.getColumn()
+			//TODO
+			predictivestr = ""+"/n";
+		}
 		
-		//TODO
-		String predictive = "";
+		String predictorstr ="";
 		
-		String algo ="";
+		
+		
+		
+		String algostr ="";
 		switch(algo.toString()) {
 		  case "SVM":
 			  //TODO
-			  algo = ""+"/n";
+			  algostr = ""+"/n";
 		    break;
 		  case "DT":
 			  //TODO
-			  algo = ""+"/n";
+			  algostr = ""+"/n";
 		    break;
 		  case "RandomForest":
 			  //TODO
-			  algo = ""+"/n";
+			  algostr = ""+"/n";
 			    break;
 		  case "LogisticRegression":
 			  //TODO
-			  algo = ""+"/n";
+			  algostr = ""+"/n";
 			    break;
 		}
 	
@@ -114,7 +123,7 @@ public class ScikitLearnCompilateur implements Compilateur {
 
 		}
 		
-		String pandasCode = pythonImport + csvReading + algo + val + metric;
+		String pandasCode = pythonImport + csvReading + predictorstr + predictivestr + algostr + val + metric;
 		pandasCode += "\nprint (mml_data)\n"; 
 		Files.write(pandasCode.getBytes(), new File("mml_ScikitLearn_"+new java.util.Date().getTime()+".py"));
 	}

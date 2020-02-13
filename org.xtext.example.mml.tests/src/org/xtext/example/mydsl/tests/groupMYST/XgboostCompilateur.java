@@ -117,7 +117,7 @@ public class XgboostCompilateur implements Compilateur{
 
 		}
 		
-		String xgBoostCode = boostImport + csvReading + algo + val + metric;
+		String xgBoostCode = boostImport + csvReading+ predictivestr +predictorstr  + algo + val + metric;
 		Files.write(xgBoostCode.getBytes(), new File("mml_Xgboost_"+new java.util.Date().getTime()+".py"));
 
 	}
