@@ -8,7 +8,9 @@ import java.util.List;
 import org.xtext.example.mydsl.mml.DT;
 import org.xtext.example.mydsl.mml.DataInput;
 import org.xtext.example.mydsl.mml.FormulaItem;
+import org.xtext.example.mydsl.mml.LogisticRegression;
 import org.xtext.example.mydsl.mml.MLAlgorithm;
+import org.xtext.example.mydsl.mml.RandomForest;
 import org.xtext.example.mydsl.mml.SVM;
 import org.xtext.example.mydsl.mml.Validation;
 import org.xtext.example.mydsl.mml.ValidationMetric;
@@ -45,27 +47,22 @@ public class XgboostCompilateur implements Compilateur{
 		String predictorstr ="";
 		
 		
-		String algosrt ="";
-		switch(algo.toString()) {
-		  case "SVM":
+		String algostr ="";
+		if(algo instanceof SVM) {
 			  //TODO
 			  SVM svm = (SVM)algo;
-			  algosrt = "";
-		    break;
-		  case "DT":
+			  algostr = "algo = "+"/n";
+		}else if(algo instanceof DT) {
+			 DT dt = (DT)algo;
+				int max_depth = dt.getMax_depth();
+				 
+				  algostr = "algo = "+"/n";
+		}else if(algo instanceof RandomForest ) {
 			  //TODO
-			  DT dt = (DT)algo;
-			int max_depth = dt.getMax_depth();
-			algosrt = "";
-		    break;
-		  case "RandomForest":
+			  algostr = "algo = "+"/n";
+		}else if(algo instanceof LogisticRegression) {
 			  //TODO
-			  algosrt = "";
-			    break;
-		  case "LogisticRegression":
-			  //TODO
-			  algosrt = "";
-			    break;
+			  algostr = "algo = "+"/n";
 		}
 		
 		int num;
@@ -136,7 +133,7 @@ public class XgboostCompilateur implements Compilateur{
 
 		}
 		
-		String xgBoostCode = boostImport + csvReading+ predictivestr +predictorstr  + algosrt + val + metric +affiche;
+		String xgBoostCode = boostImport + csvReading+ predictivestr +predictorstr  + algostr + val + metric +affiche;
 		Long date = new Date().getTime();
 		Files.write(xgBoostCode.getBytes(), new File("mml_Xgboost_"+date+".py"));
 
