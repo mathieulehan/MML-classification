@@ -7,10 +7,12 @@ import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.List;
 
+import org.xtext.example.mydsl.mml.DT;
 import org.xtext.example.mydsl.mml.DataInput;
 import org.xtext.example.mydsl.mml.FormulaItem;
 import org.xtext.example.mydsl.mml.MLAlgorithm;
 import org.xtext.example.mydsl.mml.MLChoiceAlgorithm;
+import org.xtext.example.mydsl.mml.SVM;
 import org.xtext.example.mydsl.mml.Validation;
 import org.xtext.example.mydsl.mml.ValidationMetric;
 import org.xtext.example.mydsl.mml.XFormula;
@@ -46,17 +48,18 @@ public class ScikitLearnCompilateur implements Compilateur {
 		//TODO
 		String predictorstr ="Y = mml_data[mml_data.columns[len(mml_data.columns)-1]] ";
 		
-		
-		
+
 		
 		String algostr ="";
 		switch(algo.toString()) {
 		  case "SVM":
 			  //TODO
-			 
+			  SVM svm = (SVM)algo;
 			  algostr = "algo = "+"/n";
 		    break;
 		  case "DT":
+			  DT dt = (DT)algo;
+			int max_depth = dt.getMax_depth();
 			   pythonImport = " from sklearn.tree import DecisionTreeClassifier";
 			  algostr = "algo = DecisionTreeClassifier()"+"/n";
 		    break;

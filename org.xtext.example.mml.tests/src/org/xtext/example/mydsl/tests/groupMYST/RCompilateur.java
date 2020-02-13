@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import org.xtext.example.mydsl.mml.DT;
 import org.xtext.example.mydsl.mml.DataInput;
 import org.xtext.example.mydsl.mml.FormulaItem;
 import org.xtext.example.mydsl.mml.MLAlgorithm;
+import org.xtext.example.mydsl.mml.SVM;
 import org.xtext.example.mydsl.mml.Validation;
 import org.xtext.example.mydsl.mml.ValidationMetric;
 import org.xtext.example.mydsl.mml.XFormula;
@@ -45,11 +47,14 @@ public class RCompilateur implements Compilateur{
 		String algostr ="";
 		switch(algo.toString()) {
 		  case "SVM":
+			  SVM svm = (SVM)algo;
 			  //TODO
 			  algostr = "";
 		    break;
 		  case "DT":
 			  //TODO
+			  DT dt = (DT)algo;
+			int max_depth = dt.getMax_depth();
 			  algostr = "";
 		    break;
 		  case "RandomForest":

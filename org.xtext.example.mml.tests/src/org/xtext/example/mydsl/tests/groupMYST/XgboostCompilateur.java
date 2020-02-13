@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import org.xtext.example.mydsl.mml.DT;
 import org.xtext.example.mydsl.mml.DataInput;
 import org.xtext.example.mydsl.mml.FormulaItem;
 import org.xtext.example.mydsl.mml.MLAlgorithm;
+import org.xtext.example.mydsl.mml.SVM;
 import org.xtext.example.mydsl.mml.Validation;
 import org.xtext.example.mydsl.mml.ValidationMetric;
 import org.xtext.example.mydsl.mml.XFormula;
@@ -25,10 +27,10 @@ public class XgboostCompilateur implements Compilateur{
 	private List<ValidationMetric> metrics;
 	
 	public void execute()throws IOException {
-		//TODO
-		String boostImport = ""; 
-		//TODO
-		String csvReading = "";	
+		String boostImport = "import xgboost as xgb"; 
+		boostImport += "import pandas as pd"; 
+		String csvReading = "mml_data = pd.read_csv(" + mkValueInSingleQuote(dataInput.getFilelocation()) + ", sep=" + 
+				mkValueInSingleQuote(separator) + ")";	
 		
 		String predictivestr = "";
 		if (predictive.getColName() != null && predictive.getColName()!= "") {
@@ -43,23 +45,26 @@ public class XgboostCompilateur implements Compilateur{
 		String predictorstr ="";
 		
 		
-		String algo ="";
+		String algosrt ="";
 		switch(algo.toString()) {
 		  case "SVM":
 			  //TODO
-			  algo = "";
+			  SVM svm = (SVM)algo;
+			  algosrt = "";
 		    break;
 		  case "DT":
 			  //TODO
-			  algo = "";
+			  DT dt = (DT)algo;
+			int max_depth = dt.getMax_depth();
+			algosrt = "";
 		    break;
 		  case "RandomForest":
 			  //TODO
-			  algo = "";
+			  algosrt = "";
 			    break;
 		  case "LogisticRegression":
 			  //TODO
-			  algo = "";
+			  algosrt = "";
 			    break;
 		}
 		
@@ -131,7 +136,7 @@ public class XgboostCompilateur implements Compilateur{
 
 		}
 		
-		String xgBoostCode = boostImport + csvReading+ predictivestr +predictorstr  + algo + val + metric +affiche;
+		String xgBoostCode = boostImport + csvReading+ predictivestr +predictorstr  + algosrt + val + metric +affiche;
 		Long date = new Date().getTime();
 		Files.write(xgBoostCode.getBytes(), new File("mml_Xgboost_"+date+".py"));
 

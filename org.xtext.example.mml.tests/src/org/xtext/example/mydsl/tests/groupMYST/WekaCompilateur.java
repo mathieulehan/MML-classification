@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import org.xtext.example.mydsl.mml.DT;
 import org.xtext.example.mydsl.mml.DataInput;
 import org.xtext.example.mydsl.mml.FormulaItem;
 import org.xtext.example.mydsl.mml.MLAlgorithm;
+import org.xtext.example.mydsl.mml.SVM;
 import org.xtext.example.mydsl.mml.Validation;
 import org.xtext.example.mydsl.mml.ValidationMetric;
 import org.xtext.example.mydsl.mml.XFormula;
@@ -48,10 +50,13 @@ public class WekaCompilateur implements Compilateur {
 	switch(algo.toString()) {
 	  case "SVM":
 		  //TODO
+		  SVM svm = (SVM)algo;
 		  algostr = ""+"/n";
 	    break;
 	  case "DT":
 		  //TODO
+		  DT dt = (DT)algo;
+		int max_depth = dt.getMax_depth();
 		  algostr = ""+"/n";
 	    break;
 	  case "RandomForest":
