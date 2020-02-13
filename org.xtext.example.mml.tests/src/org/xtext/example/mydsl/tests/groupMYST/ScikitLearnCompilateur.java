@@ -15,6 +15,8 @@ import org.xtext.example.mydsl.mml.MLAlgorithm;
 import org.xtext.example.mydsl.mml.MLChoiceAlgorithm;
 import org.xtext.example.mydsl.mml.RandomForest;
 import org.xtext.example.mydsl.mml.SVM;
+import org.xtext.example.mydsl.mml.SVMClassification;
+import org.xtext.example.mydsl.mml.SVMKernel;
 import org.xtext.example.mydsl.mml.Validation;
 import org.xtext.example.mydsl.mml.ValidationMetric;
 import org.xtext.example.mydsl.mml.XFormula;
@@ -34,17 +36,16 @@ public class ScikitLearnCompilateur implements Compilateur {
 
 	
 	public void execute() throws IOException {
-		String pythonImport = "import pandas as pd\n"; 
-		
+		String pythonImport = "import pandas as pd\r\n"; 
 		String csvReading = "mml_data = pd.read_csv(" + mkValueInSingleQuote(dataInput.getFilelocation()) + ", sep=" + 
-		mkValueInSingleQuote(separator) + ")";	
+		mkValueInSingleQuote(separator) + ")\r\n";	
 		
 		String predictivestr = "";
 		if (predictive.getColName() != null && predictive.getColName()!= "") {
-			predictivestr = "X = mml_data.drop(columns=[\""+predictive.getColName()+"\"])"+"/n";
+			predictivestr = "X = mml_data.drop(columns=[\""+predictive.getColName()+"\"])"+"\r\n";
 		}else {
 			//dernière colonne predictive.getColumn()
-			predictivestr = "X = mml_data.drop(mml_data.columns[len(mml_data.columns)-1])"+"/n";
+			predictivestr = "X = mml_data.drop(mml_data.columns[len(mml_data.columns)-1])"+"\r\n";
 		}
 		
 		//TODO
@@ -54,34 +55,42 @@ public class ScikitLearnCompilateur implements Compilateur {
 		if(algo instanceof SVM) {
 			  //TODO
 			  SVM svm = (SVM)algo;
-			  algostr = "algo = "+"/n";
+			String c = svm.getC();
+			String gamma = svm.getGamma();
+			SVMKernel kernel = svm.getKernel();
+			SVMClassification classification = svm.getSvmclassification();
+			  algostr = "algo = "+"\r\n";
 		}else if(algo instanceof DT) {
 			 DT dt = (DT)algo;
 				int max_depth = dt.getMax_depth();
-				   pythonImport = " from sklearn.tree import DecisionTreeClassifier";
-				  algostr = "algo = DecisionTreeClassifier()"+"/n";
+			pythonImport = " from sklearn.tree import DecisionTreeClassifier"+"\r\n";
+			if(max_depth != 0) {
+				algostr = "algo = DecisionTreeClassifier(max_depth="+max_depth+")"+"\r\n";
+			}else {
+				algostr = "algo = DecisionTreeClassifier()"+"\r\n";
+			}
 		}else if(algo instanceof RandomForest ) {
-			  //TODO
-			  algostr = "algo = "+"/n";
+			pythonImport = "from sklearn.ensemble import RandomForestClassifier";
+			  algostr = "algo = RandomForestClassifier().fit(X, Y)\r\n" ;
 		}else if(algo instanceof LogisticRegression) {
-			  //TODO
-			  algostr = "algo = "+"/n";
+
+			  algostr = "algo = LogisticRegression().fit(X, Y) "+"\r\n";
 		}
 		
 		String val = "";
 		int num;
 		switch(validation.getStratification().toString()) {
 		  case "CrossValidation":
-				 pythonImport += "from sklearn.model_selection import cross_validate";
+				 pythonImport += "from sklearn.model_selection import cross_validate"+"\r\n";
 				 num = validation.getStratification().getNumber();
-			  val = "scores = cross_validate(algo, X, Y, cv="+num+")"+"/n";
+			  val = "scores = cross_validate(algo, X, Y, cv="+num+")"+"\r\n";
 		    break;
 		  case "TrainingTest":
-			  pythonImport += "from sklearn.model_selection import train_test_split";
+			  pythonImport += "from sklearn.model_selection import train_test_split"+"\r\n";
 			  num = validation.getStratification().getNumber();
-			  val = "test_size =" +num+"\n" + 
-			  		"X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=test_size)"+"/n";
-			  val +="scores =  algo.fit(X_train, y_train)";
+			  val = "test_size =" +num+"\r\n" + 
+			  		"X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=test_size)"+"\r\n";
+			  val +="scores =  algo.fit(X_train, y_train)"+"\r\n";
 			  break;
 		}
 		
@@ -91,56 +100,56 @@ public class ScikitLearnCompilateur implements Compilateur {
 		switch(laMetric.getName()) {
 		  case "balanced_accuracy":
 			  //TODO
-				pythonImport +="from sklearn.metrics import balanced_accuracy_score";
-			   metric +="balanceA = balanced_accuracy_score(y_true, y_pred)"+"/n";
-			   affiche  +="print(balanceA)"+"/n";
+				pythonImport +="from sklearn.metrics import balanced_accuracy_score"+"\r\n";
+			   metric +="balanceA = balanced_accuracy_score(y_true, y_pred)"+"\r\n";
+			   affiche  +="print(balanceA)";
 		    break;
 		  case "precision":
 			  //TODO
-			  pythonImport +="from sklearn.metrics import precision_score";
-			  metric +="precision = precision_score(y_true, y_pred, average='micro')"+"/n";
-			   affiche  +="precision"+"/n";
+			  pythonImport +="from sklearn.metrics import precision_score"+"\r\n";
+			  metric +="precision = precision_score(y_true, y_pred, average='micro')"+"\r\n";
+			   affiche  +="print(precision)";
 		    break;
 		  case "recall":
 			  //TODO
-			  pythonImport +="from sklearn.metrics import recall_score";
-			  metric +="recall = recall_score(y_true, y_pred,average='micro' )"+"/n";
-			  affiche  +="print(recall)"+"/n";
+			  pythonImport +="from sklearn.metrics import recall_score"+"\r\n";
+			  metric +="recall = recall_score(y_true, y_pred,average='micro' )"+"\r\n";
+			  affiche  +="print(recall)"+"\r\n";
 			    break;
 		  case "F1":
 			  //TODO
-			  pythonImport +="from sklearn.metrics import f1_score";
-			  metric +="f1 = f1_score(y_true, y_pred, average='micro')"+"/n";
-			   affiche  +="print(f1)"+"/n";
+			  pythonImport +="from sklearn.metrics import f1_score"+"\r\n";
+			  metric +="f1 = f1_score(y_true, y_pred, average='micro')"+"\r\n";
+			   affiche  +="print(f1)";
 			    break;
 		  case "accuracy":
 			  //TODO
-			pythonImport +="from sklearn.metrics import accuracy_score";
-			  metric +="accuracy = accuracy_score(y_true, y_pred)"+"/n";
-			   affiche  +="print(accuracy)"+"/n";
+			pythonImport +="from sklearn.metrics import accuracy_score"+"\r\n";
+			  metric +="accuracy = accuracy_score(y_true, y_pred)"+"\r\n";
+			   affiche  +="print(accuracy)";
 			    break;
 		  case "macro_recall":
 			  //TODO
-			  pythonImport +="from sklearn.metrics import recall_score";
-			  metric +="recall = recall_score(y_true, y_pred,average='macro' )"+"/n";
-			  affiche  +="print(recall)"+"/n";
+			  pythonImport +="from sklearn.metrics import recall_score"+"\r\n";
+			  metric +="recall = recall_score(y_true, y_pred,average='macro' )"+"\r\n";
+			  affiche  +="print(recall)";
 			    break;
 		  case "macro_precision":
 			  //TODO
-			  pythonImport +="from sklearn.metrics import precision_score";
-			  metric +="precision = precision_score(y_true, y_pred, average='macro')"+"/n";
-			   affiche  +="precision"+"/n";
+			  pythonImport +="from sklearn.metrics import precision_score"+"\r\n";
+			  metric +="precision = precision_score(y_true, y_pred, average='macro')"+"\r\n";
+			   affiche  +="print(precision)";
 			    break;
 		  case "macro_F1":
 			  //TODO
-			  pythonImport +="from sklearn.metrics import f1_score";
-			  metric +="f1 = f1_score(y_true, y_pred, average='macro')"+"/n";
-			   affiche  +="print(f1)"+"/n";
+			  pythonImport +="from sklearn.metrics import f1_score"+"\r\n";
+			  metric +="f1 = f1_score(y_true, y_pred, average='macro')"+"\r\n";
+			   affiche  +="print(f1)";
 			    break;
 		  case "macro_accuracy":
 			  //TODO
-			  metric +=""+"/n";
-			  affiche  +=""+"/n";
+			  metric +=""+"\r\n";
+			  affiche  +=""+"\r\n";
 			    break;
 		}
 

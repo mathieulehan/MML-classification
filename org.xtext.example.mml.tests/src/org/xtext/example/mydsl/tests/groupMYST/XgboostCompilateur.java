@@ -29,19 +29,19 @@ public class XgboostCompilateur implements Compilateur{
 	private List<ValidationMetric> metrics;
 	
 	public void execute()throws IOException {
-		String boostImport = "import xgboost as xgb"; 
-		boostImport += "import pandas as pd"; 
+		String boostImport = "import xgboost as xgb"+"\r\n"; 
+		boostImport += "import pandas as pd"+"\r\n"; 
 		String csvReading = "mml_data = pd.read_csv(" + mkValueInSingleQuote(dataInput.getFilelocation()) + ", sep=" + 
-				mkValueInSingleQuote(separator) + ")";	
+				mkValueInSingleQuote(separator) + ")"+"\r\n";	
 		
 		String predictivestr = "";
 		if (predictive.getColName() != null && predictive.getColName()!= "") {
 			//TODO
-			predictivestr = ""+"/n";
+			predictivestr = ""+"\r\n";
 		}else {
 			//dernière colonne predictive.getColumn()
 			//TODO
-			predictivestr = ""+"/n";
+			predictivestr = ""+"\r\n";
 		}
 		
 		String predictorstr ="";
@@ -51,18 +51,22 @@ public class XgboostCompilateur implements Compilateur{
 		if(algo instanceof SVM) {
 			  //TODO
 			  SVM svm = (SVM)algo;
-			  algostr = "algo = "+"/n";
+			  algostr = "algo = "+"\r\n";
 		}else if(algo instanceof DT) {
 			 DT dt = (DT)algo;
 				int max_depth = dt.getMax_depth();
 				 
-				  algostr = "algo = "+"/n";
+				if(max_depth != 0) {
+					 algostr = "algo = "+"\r\n";
+				}else {
+					 algostr = "algo = "+"\r\n";
+				}
 		}else if(algo instanceof RandomForest ) {
 			  //TODO
-			  algostr = "algo = "+"/n";
+			  algostr = "algo = "+"\r\n";
 		}else if(algo instanceof LogisticRegression) {
 			  //TODO
-			  algostr = "algo = "+"/n";
+			  algostr = "algo = "+"\r\n";
 		}
 		
 		int num;
@@ -71,12 +75,12 @@ public class XgboostCompilateur implements Compilateur{
 		  case "CrossValidation":
 			  //TODO
 			  num = validation.getStratification().getNumber();
-			  val = "";
+			  val = ""+"\r\n";
 		    break;
 		  case "TrainingTest":
 			  //TODO
 			  num = validation.getStratification().getNumber();
-			  val = "";
+			  val = ""+"\r\n";
 		    break;
 		}
 		
@@ -86,48 +90,48 @@ public class XgboostCompilateur implements Compilateur{
 		switch(laMetric.getName()) {
 		  case "balanced_accuracy":
 			  //TODO
-			   metric +=""+"/n";
-			   affiche  +=""+"/n";
+			   metric +=""+"\r\n";
+			   affiche  +=""+"\r\n";
 		    break;
 		  case "recall":
 			  //TODO
-			  metric +=""+"/n";
-			  affiche  +=""+"/n";
+			  metric +=""+"\r\n";
+			  affiche  +=""+"\r\n";
 		    break;
 		  case "precision":
 			  //TODO
-			  metric +=""+"/n";
-			  affiche  +=""+"/n";
+			  metric +=""+"\r\n";
+			  affiche  +=""+"\r\n";
 			    break;
 		  case "F1":
 			  //TODO
-			  metric +=""+"/n";
-			  affiche  +=""+"/n";
+			  metric +=""+"\r\n";
+			  affiche  +=""+"\r\n";
 			    break;
 		  case "accuracy":
 			  //TODO
-			  metric +=""+"/n";
-			  affiche  +=""+"/n";
+			  metric +=""+"\r\n";
+			  affiche  +=""+"\r\n";
 			    break;
 		  case "macro_recall":
 			  //TODO
-			  metric +=""+"/n";
-			  affiche  +=""+"/n";
+			  metric +=""+"\r\n";
+			  affiche  +=""+"\r\n";
 			    break;
 		  case "macro_precision":
 			  //TODO
-			  metric +=""+"/n";
-			  affiche  +=""+"/n";
+			  metric +=""+"\r\n";
+			  affiche  +=""+"\r\n";
 			    break;
 		  case "macro_F1":
 			  //TODO
-			  metric +=""+"/n";
-			  affiche  +=""+"/n";
+			  metric +=""+"\r\n";
+			  affiche  +=""+"\r\n";
 			    break;
 		  case "macro_accuracy":
 			  //TODO
-			  metric +=""+"/n";
-			  affiche  +=""+"/n";
+			  metric +=""+"\r\n";
+			  affiche  +=""+"\r\n";
 			    break;
 		}
 

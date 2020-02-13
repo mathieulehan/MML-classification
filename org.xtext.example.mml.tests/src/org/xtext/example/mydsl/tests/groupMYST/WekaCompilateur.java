@@ -31,19 +31,19 @@ public class WekaCompilateur implements Compilateur {
 
 	
 	public void execute() throws IOException{
-	String wikaImport = "import wekaexamples.helper as helper "+ "from weka.core.converters import Loader";
-	String loader = "loader = Loader(classname=\"weka.core.converters.CSVLoader\")";
+	String wikaImport = "import wekaexamples.helper as helper "+"\r\n"+ "from weka.core.converters import Loader"+"\r\n";
+	String loader = "loader = Loader(classname=\"weka.core.converters.CSVLoader\")"+"\r\n";
 	String csvReading = "mml_data = loader.load_file(helper.get_data_dir() + " + separator +" + "+ 
-	mkValueInSingleQuote(dataInput.getFilelocation());
+	mkValueInSingleQuote(dataInput.getFilelocation())+")\r\n";
 	
 	String predictivestr = "";
 	if (predictive.getColName() != null && predictive.getColName()!= "") {
 		//TODO
-		predictivestr = ""+"/n";
+		predictivestr = ""+"\r\n";
 	}else {
 		//dernière colonne predictive.getColumn()
 		//TODO
-		predictivestr = ""+"/n";
+		predictivestr = ""+"\r\n";
 	}
 	
 	String predictorstr ="";
@@ -52,18 +52,22 @@ public class WekaCompilateur implements Compilateur {
 	if(algo instanceof SVM) {
 		  //TODO
 		  SVM svm = (SVM)algo;
-		  algostr = "algo = "+"/n";
+		  algostr = "algo = "+"\r\n";
 	}else if(algo instanceof DT) {
 		 DT dt = (DT)algo;
 			int max_depth = dt.getMax_depth();
+			if(max_depth != 0) {
+				 algostr = "algo = "+"\r\n";
+			}else {
+				 algostr = "algo = "+"\r\n";
+			}
 			 
-			  algostr = "algo = "+"/n";
 	}else if(algo instanceof RandomForest ) {
 		  //TODO
-		  algostr = "algo = "+"/n";
+		  algostr = "algo = "+"\r\n";
 	}else if(algo instanceof LogisticRegression) {
 		  //TODO
-		  algostr = "algo = "+"/n";
+		  algostr = "algo = "+"\r\n";
 	}
 	
 
@@ -73,13 +77,13 @@ public class WekaCompilateur implements Compilateur {
 	  case "CrossValidation":
 		  //TODO
 		  num = validation.getStratification().getNumber();
-		  val = ""+"/n";
+		  val = ""+"\r\n";
 		  
 	    break;
 	  case "TrainingTest":
 		  //TODO
 		  num = validation.getStratification().getNumber();
-		  val = ""+"/n";
+		  val = ""+"\r\n";
 	    break;
 	}
 	
@@ -89,48 +93,48 @@ public class WekaCompilateur implements Compilateur {
 	switch(laMetric.getName()) {
 	  case "balanced_accuracy":
 		  //TODO
-		   metric +=""+"/n";
-		   affiche  +=""+"/n";
+		   metric +=""+"\r\n";
+		   affiche  +=""+"\r\n";
 	    break;
 	  case "recall":
 		  //TODO
-		  metric +=""+"/n";
-		  affiche  +=""+"/n";
+		   metric +=""+"\r\n";
+		   affiche  +=""+"\r\n";
 	    break;
 	  case "precision":
 		  //TODO
-		  metric +=""+"/n";
-		  affiche  +=""+"/n";
+		   metric +=""+"\r\n";
+		   affiche  +=""+"\r\n";
 		    break;
 	  case "F1":
 		  //TODO
-		  metric +=""+"/n";
-		  affiche  +=""+"/n";
+		   metric +=""+"\r\n";
+		   affiche  +=""+"\r\n";
 		    break;
 	  case "accuracy":
 		  //TODO
-		  metric +=""+"/n";
-		  affiche  +=""+"/n";
+		   metric +=""+"\r\n";
+		   affiche  +=""+"\r\n";
 		    break;
 	  case "macro_recall":
 		  //TODO
-		  metric +=""+"/n";
-		  affiche  +=""+"/n";
+		   metric +=""+"\r\n";
+		   affiche  +=""+"\r\n";
 		    break;
 	  case "macro_precision":
 		  //TODO
-		  metric +=""+"/n";
-		  affiche  +=""+"/n";
+		   metric +=""+"\r\n";
+		   affiche  +=""+"\r\n";
 		    break;
 	  case "macro_F1":
 		  //TODO
-		  metric +=""+"/n";
-		  affiche  +=""+"/n";
+		   metric +=""+"\r\n";
+		   affiche  +=""+"\r\n";
 		    break;
 	  case "macro_accuracy":
 		  //TODO
-		  metric +=""+"/n";
-		  affiche  +=""+"/n";
+		   metric +=""+"\r\n";
+		   affiche  +=""+"\r\n";
 		    break;
 	}
 
