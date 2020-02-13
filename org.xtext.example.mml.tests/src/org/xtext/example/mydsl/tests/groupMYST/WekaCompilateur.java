@@ -2,6 +2,7 @@ package org.xtext.example.mydsl.tests.groupMYST;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import org.xtext.example.mydsl.mml.DataInput;
@@ -63,65 +64,79 @@ public class WekaCompilateur implements Compilateur {
 		    break;
 	}
 
-
+	int num;
 	String val = "";
 	switch(validation.getStratification().toString()) {
 	  case "CrossValidation":
 		  //TODO
+		  num = validation.getStratification().getNumber();
 		  val = ""+"/n";
+		  
 	    break;
 	  case "TrainingTest":
 		  //TODO
+		  num = validation.getStratification().getNumber();
 		  val = ""+"/n";
 	    break;
 	}
 	
 	String metric ="";
+	String affiche ="";
 	for (ValidationMetric laMetric : metrics) {
 	switch(laMetric.getName()) {
 	  case "balanced_accuracy":
 		  //TODO
 		   metric +=""+"/n";
+		   affiche  +=""+"/n";
 	    break;
 	  case "recall":
 		  //TODO
 		  metric +=""+"/n";
+		  affiche  +=""+"/n";
 	    break;
 	  case "precision":
 		  //TODO
 		  metric +=""+"/n";
+		  affiche  +=""+"/n";
 		    break;
 	  case "F1":
 		  //TODO
 		  metric +=""+"/n";
+		  affiche  +=""+"/n";
 		    break;
 	  case "accuracy":
 		  //TODO
 		  metric +=""+"/n";
+		  affiche  +=""+"/n";
 		    break;
 	  case "macro_recall":
 		  //TODO
 		  metric +=""+"/n";
+		  affiche  +=""+"/n";
 		    break;
 	  case "macro_precision":
 		  //TODO
 		  metric +=""+"/n";
+		  affiche  +=""+"/n";
 		    break;
 	  case "macro_F1":
 		  //TODO
 		  metric +=""+"/n";
+		  affiche  +=""+"/n";
 		    break;
 	  case "macro_accuracy":
 		  //TODO
 		  metric +=""+"/n";
+		  affiche  +=""+"/n";
 		    break;
 	}
 
 	}
 	
-	String wekaCode = wikaImport + loader + csvReading + predictivestr +predictorstr + algostr + val + metric;
+	String wekaCode = wikaImport + loader + csvReading + predictivestr +predictorstr + algostr + val + metric +  affiche  ;
 	wekaCode += "print(str(mml_data))";
-	Files.write(wekaCode.getBytes(), new File("mml_weka_"+new java.util.Date().getTime()+".py"));
+	Long date = new Date().getTime();
+	Files.write(wekaCode.getBytes(), new File("mml_weka_"+date+".py"));
 		
 	}
 	public void configure(MLAlgorithm algo, DataInput dataInput, Validation validation, String separator, FormulaItem predictive, XFormula predictore,  String fileResult) {

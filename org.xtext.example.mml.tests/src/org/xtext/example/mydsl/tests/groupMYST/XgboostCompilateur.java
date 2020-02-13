@@ -2,6 +2,7 @@ package org.xtext.example.mydsl.tests.groupMYST;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import org.xtext.example.mydsl.mml.DataInput;
@@ -61,64 +62,78 @@ public class XgboostCompilateur implements Compilateur{
 			  algo = "";
 			    break;
 		}
-	
+		
+		int num;
 		String val = "";
 		switch(validation.getStratification().toString()) {
 		  case "CrossValidation":
 			  //TODO
+			  num = validation.getStratification().getNumber();
 			  val = "";
 		    break;
 		  case "TrainingTest":
 			  //TODO
+			  num = validation.getStratification().getNumber();
 			  val = "";
 		    break;
 		}
 		
+		String affiche ="";
 		String metric ="";
 		for (ValidationMetric laMetric : metrics) {
 		switch(laMetric.getName()) {
 		  case "balanced_accuracy":
 			  //TODO
 			   metric +=""+"/n";
+			   affiche  +=""+"/n";
 		    break;
 		  case "recall":
 			  //TODO
 			  metric +=""+"/n";
+			  affiche  +=""+"/n";
 		    break;
 		  case "precision":
 			  //TODO
 			  metric +=""+"/n";
+			  affiche  +=""+"/n";
 			    break;
 		  case "F1":
 			  //TODO
 			  metric +=""+"/n";
+			  affiche  +=""+"/n";
 			    break;
 		  case "accuracy":
 			  //TODO
 			  metric +=""+"/n";
+			  affiche  +=""+"/n";
 			    break;
 		  case "macro_recall":
 			  //TODO
 			  metric +=""+"/n";
+			  affiche  +=""+"/n";
 			    break;
 		  case "macro_precision":
 			  //TODO
 			  metric +=""+"/n";
+			  affiche  +=""+"/n";
 			    break;
 		  case "macro_F1":
 			  //TODO
 			  metric +=""+"/n";
+			  affiche  +=""+"/n";
 			    break;
 		  case "macro_accuracy":
 			  //TODO
 			  metric +=""+"/n";
+			  affiche  +=""+"/n";
 			    break;
 		}
 
 		}
 		
-		String xgBoostCode = boostImport + csvReading+ predictivestr +predictorstr  + algo + val + metric;
-		Files.write(xgBoostCode.getBytes(), new File("mml_Xgboost_"+new java.util.Date().getTime()+".py"));
+		String xgBoostCode = boostImport + csvReading+ predictivestr +predictorstr  + algo + val + metric +affiche;
+		Long date = new Date().getTime();
+		Files.write(xgBoostCode.getBytes(), new File("mml_Xgboost_"+date+".py"));
 
 	}
 	

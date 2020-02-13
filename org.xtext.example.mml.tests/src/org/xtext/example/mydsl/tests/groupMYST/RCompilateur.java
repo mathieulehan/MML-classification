@@ -2,6 +2,7 @@ package org.xtext.example.mydsl.tests.groupMYST;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import org.xtext.example.mydsl.mml.DataInput;
@@ -61,57 +62,69 @@ public class RCompilateur implements Compilateur{
 			    break;
 		}
 	
-
+		int num;
 		String val = "";
 		switch(validation.getStratification().toString()) {
 		  case "CrossValidation":
 			  //TODO
 			  val = "";
+			  num = validation.getStratification().getNumber();
 		    break;
 		  case "TrainingTest":
 			  //TODO
 			  val = "";
+			  num = validation.getStratification().getNumber();
 		    break;
 		}
 		
 		String metric ="";
+		 String affiche  ="";
 		for (ValidationMetric laMetric : metrics) {
 		switch(laMetric.getName()) {
 		  case "balanced_accuracy":
 			  //TODO
 			   metric +=""+"/n";
+			   affiche  +=""+"/n";
 		    break;
 		  case "recall":
 			  //TODO
 			  metric +=""+"/n";
+			  affiche  +=""+"/n";
 		    break;
 		  case "precision":
 			  //TODO
 			  metric +=""+"/n";
+			  affiche  +=""+"/n";
 			    break;
 		  case "F1":
 			  //TODO
 			  metric +=""+"/n";
+			  affiche  +=""+"/n";
 			    break;
 		  case "accuracy":
 			  //TODO
 			  metric +=""+"/n";
+			  affiche  +=""+"/n";
 			    break;
 		  case "macro_recall":
 			  //TODO
 			  metric +=""+"/n";
+			  affiche  +=""+"/n";
 			    break;
 		  case "macro_precision":
 			  //TODO
 			  metric +=""+"/n";
+			  affiche  +=""+"/n";
 			    break;
 		  case "macro_F1":
 			  //TODO
 			  metric +=""+"/n";
+			  affiche  +=""+"/n";
 			    break;
 		  case "macro_accuracy":
 			  //TODO
 			  metric +=""+"/n";
+			  affiche  +=""+"/n";
 			    break;
 		}
 
@@ -119,11 +132,12 @@ public class RCompilateur implements Compilateur{
 		
 
 		
-		String rCode = rImport + csvReading + predictivestr +predictorstr  + algostr + val + metric;
+		String rCode = rImport + csvReading + predictivestr +predictorstr  + algostr + val + metric +affiche;
 		//TODO
 		rCode += ""; //trouver a afficher en R
 		//TODO
-		Files.write(rCode.getBytes(), new File("mml_R"+new java.util.Date().getTime()+".???????"));		
+		Long date = new Date().getTime();
+		Files.write(rCode.getBytes(), new File("mml_R"+date+".???????"));		
 	}
 	public void configure(MLAlgorithm algo, DataInput dataInput, Validation validation, String separator,  FormulaItem predictive, XFormula predictore, String fileResult) {
 		this.algo = algo;
