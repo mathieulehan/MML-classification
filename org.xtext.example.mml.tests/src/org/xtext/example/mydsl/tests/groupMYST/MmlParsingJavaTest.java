@@ -110,8 +110,8 @@ public class MmlParsingJavaTest {
 				}
 				String csvReading = "data <- read.csv(\""+fileLocation+"\", header = FALSE, sep = \""+csv_separator+"\")";
 				String rCode = rImport + csvReading;
-				rCode += ""; //trouver a afficher en R
-				Files.write(rCode.getBytes(), new File("mml"+indexModel+".???????"));
+				rCode += "print(data)";
+				Files.write(rCode.getBytes(), new File("mml"+indexModel+".R"));
 			}
 			
 			else if(algos.getFramework().getName().equals("Weka")) {

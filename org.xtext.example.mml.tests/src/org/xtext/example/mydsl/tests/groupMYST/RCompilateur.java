@@ -31,41 +31,40 @@ public class RCompilateur implements Compilateur{
 	private List<ValidationMetric> metrics;
 	
 	public void execute() throws IOException {
-		String rImport = "library(rpart)";
+		String rImport = "library(rpart)\r\n";
+		rImport += "library(caret)\r\n";
 		String csvReading = "data <- read.csv(\""+dataInput.getFilelocation()+"\", header = FALSE, sep = \""+separator+"\")";
 		
 		String predictivestr = "";
 		if (predictive.getColName() != null && predictive.getColName()!= "") {
-			//TODO
-			predictivestr = ""+"\r\n";
+			predictivestr = "X <- data$"+predictive.getColName()+" <- NULL"+"\r\n";
 		}else {
 			//dernière colonne predictive.getColumn()
-			//TODO
-			predictivestr = ""+"\r\n";
+			predictivestr = "X <- data.[ncol(data.columns)-1] <- NULL"+"\r\n";
 		}
 		
-		String predictorstr ="";
+		String predictorstr ="Y <- data.[ncol(data.columns)-1]\r\n";
 		
 		String algostr ="";
 		if(algo instanceof SVM) {
 			  //TODO
 			  SVM svm = (SVM)algo;
-			  algostr = "algo = "+"\r\n";
+			  algostr += "algo = "+"\r\n";
 		}else if(algo instanceof DT) {
 			 DT dt = (DT)algo;
 				int max_depth = dt.getMax_depth();
 				if(max_depth != 0) {
-					 algostr = "algo = "+"\r\n";
+					 algostr += "algo = "+"\r\n";
 				}else {
-					 algostr = "algo = "+"\r\n";
+					 algostr += "algo = "+"\r\n";
 				}
 				 
 		}else if(algo instanceof RandomForest ) {
-			  //TODO
-			  algostr = "algo = "+"\r\n";
+			  algostr += "library(randomForest)\r\n";
+			  algostr += "set.seed(123)\r\n";
+			  algostr += "algo <- randomForest(data = data)";
 		}else if(algo instanceof LogisticRegression) {
-			  //TODO
-			  algostr = "algo = "+"\r\n";
+			  algostr += "algo = glm.fit(gml(X, Y, data = data)";
 		}
 		
 		
@@ -73,45 +72,47 @@ public class RCompilateur implements Compilateur{
 		String val = "";
 		switch(validation.getStratification().toString()) {
 		  case "CrossValidation":
-			  //TODO
-			  val = "";
 			  num = validation.getStratification().getNumber();
+			  val += "train_control <- trainControl(method=\"cv\", number="+num+")\r\n";
+			  val += "scores <- train(data=data, trControl=train_control, method=\"nb\"\r\n)";
 		    break;
 		  case "TrainingTest":
-			  //TODO
-			  val = "";
 			  num = validation.getStratification().getNumber();
+			  val += "sample <- sample.int(n = nrow(data), size = floor(.50*nrow(data)), replace = F)\r\n";
+			  val += "train <- data[sample, ]\r\n";
+			  val += "test  <- data[-sample, ]";
 		    break;
 		}
 		
 		String metric ="";
 		 String affiche  ="";
 		for (ValidationMetric laMetric : metrics) {
-		switch(laMetric.getName()) {
+		algostr += "cm <- confusionMatrix(data, train(data)\r\n";
+			switch(laMetric.getName()) {
 		  case "balanced_accuracy":
 			  //TODO
-			   metric +=""+"\r\n";
-			   affiche  +=""+"\r\n";
+			   metric +="balanceA <- cm$overall[['Balanced Accuracy']]"+"\r\n";
+			   affiche  +="print(balanceA)"+"\r\n";
 		    break;
 		  case "recall":
 			  //TODO
-			  metric +=""+"\r\n";
-			   affiche  +=""+"\r\n";
+			   metric +="recall <- cm$overall[['Recall']]"+"\r\n";
+			   affiche  +="print(recall)"+"\r\n";
 		    break;
 		  case "precision":
 			  //TODO
-			  metric +=""+"\r\n";
-			   affiche  +=""+"\r\n";
+			   metric +="precision <- cm$overall[['Precision']]"+"\r\n";
+			   affiche  +="print(precision)"+"\r\n";
 			    break;
 		  case "F1":
 			  //TODO
-			  metric +=""+"\r\n";
-			   affiche  +=""+"\r\n";
+			   metric +="f1 <- cm$overall[['F1']]"+"\r\n";
+			   affiche  +="print(f1)"+"\r\n";
 			    break;
 		  case "accuracy":
 			  //TODO
-			  metric +=""+"\r\n";
-			   affiche  +=""+"\r\n";
+			   metric +="accuracy <- cm$overall[['Accuracy']]"+"\r\n";
+			   affiche  +="print(accuracy)"+"\r\n";
 			    break;
 		  case "macro_recall":
 			  //TODO
@@ -137,14 +138,12 @@ public class RCompilateur implements Compilateur{
 
 		}
 		
-
-		
 		String rCode = rImport + csvReading + predictivestr +predictorstr  + algostr + val + metric +affiche;
 		//TODO
 		rCode += ""; //trouver a afficher en R
 		//TODO
 		Long date = new Date().getTime();
-		Files.write(rCode.getBytes(), new File("mml_R"+date+".???????"));		
+		Files.write(rCode.getBytes(), new File("mml_R"+date+".R"));		
 	}
 	public void configure(MLAlgorithm algo, DataInput dataInput, Validation validation, String separator,  FormulaItem predictive, XFormula predictore, String fileResult) {
 		this.algo = algo;
