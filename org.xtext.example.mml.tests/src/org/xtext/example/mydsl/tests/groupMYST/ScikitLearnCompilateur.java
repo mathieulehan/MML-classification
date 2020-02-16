@@ -66,27 +66,32 @@ public class ScikitLearnCompilateur implements Compilateur {
 				SVMClassification classification = svm.getSvmclassification();
 				switch(classification.getName()) {
 					case "C-classification":
+						pythonImport +="from sklearn.svm import SVC";
+						algostr =	"algo = SVC(gamma="+gamma+").fit(X, Y)";
 					case "nu-classification":
+						pythonImport +="from sklearn.svm import NuSVC";
 						algostr = "algo = NuSVC().fit(X, Y)";
 					case "one-classification":
-						algostr = "algo  = OneClassSVM(gamma='auto').fit(X)";
+						pythonImport +="from sklearn.svm import OneClassSVM";
+						algostr = "algo = OneClassSVM(gamma="+gamma+").fit(X)";
 				}
 			}
 			
-			algostr = "algo = "+"\r\n";
+	
 		}else if(algo instanceof DT) {
 			 DT dt = (DT)algo;
 				int max_depth = dt.getMax_depth();
-			pythonImport = " from sklearn.tree import DecisionTreeClassifier"+"\r\n";
+			pythonImport += " from sklearn.tree import DecisionTreeClassifier"+"\r\n";
 			if(max_depth != 0) {
 				algostr = "algo = DecisionTreeClassifier(max_depth="+max_depth+")"+"\r\n";
 			}else {
 				algostr = "algo = DecisionTreeClassifier()"+"\r\n";
 			}
 		}else if(algo instanceof RandomForest ) {
-			pythonImport = "from sklearn.ensemble import RandomForestClassifier";
+			pythonImport += "from sklearn.ensemble import RandomForestClassifier";
 			algostr = "algo = RandomForestClassifier().fit(X, Y)\r\n" ;
 		}else if(algo instanceof LogisticRegression) {
+			pythonImport += "from sklearn.linear_model import LogisticRegression";
 			algostr = "algo = LogisticRegression().fit(X, Y) "+"\r\n";
 		}
 		
