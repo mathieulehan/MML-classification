@@ -54,12 +54,26 @@ public class ScikitLearnCompilateur implements Compilateur {
 		String algostr ="";
 		if(algo instanceof SVM) {
 			  //TODO
-			  SVM svm = (SVM)algo;
+			SVM svm = (SVM)algo;
 			String c = svm.getC();
 			String gamma = svm.getGamma();
-			SVMKernel kernel = svm.getKernel();
-			SVMClassification classification = svm.getSvmclassification();
-			  algostr = "algo = "+"\r\n";
+			
+			if(svm.isKernelSpecified()) {
+				SVMKernel kernel = svm.getKernel();
+			}
+			
+			if(svm.isClassificationSpecified()) {
+				SVMClassification classification = svm.getSvmclassification();
+				switch(classification.getName()) {
+					case "C-classification":
+					case "nu-classification":
+						algostr = "algo = NuSVC().fit(X, Y)";
+					case "one-classification":
+						algostr = "algo  = OneClassSVM(gamma='auto').fit(X)";
+				}
+			}
+			
+			algostr = "algo = "+"\r\n";
 		}else if(algo instanceof DT) {
 			 DT dt = (DT)algo;
 				int max_depth = dt.getMax_depth();
@@ -71,10 +85,9 @@ public class ScikitLearnCompilateur implements Compilateur {
 			}
 		}else if(algo instanceof RandomForest ) {
 			pythonImport = "from sklearn.ensemble import RandomForestClassifier";
-			  algostr = "algo = RandomForestClassifier().fit(X, Y)\r\n" ;
+			algostr = "algo = RandomForestClassifier().fit(X, Y)\r\n" ;
 		}else if(algo instanceof LogisticRegression) {
-
-			  algostr = "algo = LogisticRegression().fit(X, Y) "+"\r\n";
+			algostr = "algo = LogisticRegression().fit(X, Y) "+"\r\n";
 		}
 		
 		String val = "";

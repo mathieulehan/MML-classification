@@ -139,9 +139,6 @@ public class RCompilateur implements Compilateur{
 		}
 		
 		String rCode = rImport + csvReading + predictivestr +predictorstr  + algostr + val + metric +affiche;
-		//TODO
-		rCode += ""; //trouver a afficher en R
-		//TODO
 		Long date = new Date().getTime();
 		Files.write(rCode.getBytes(), new File("mml_R"+date+".R"));		
 	}
