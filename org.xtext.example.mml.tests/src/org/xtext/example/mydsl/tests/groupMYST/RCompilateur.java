@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import org.xtext.example.mydsl.mml.CrossValidation;
 import org.xtext.example.mydsl.mml.DT;
 import org.xtext.example.mydsl.mml.DataInput;
 import org.xtext.example.mydsl.mml.FormulaItem;
@@ -13,6 +14,7 @@ import org.xtext.example.mydsl.mml.MLAlgorithm;
 import org.xtext.example.mydsl.mml.RandomForest;
 import org.xtext.example.mydsl.mml.SVM;
 import org.xtext.example.mydsl.mml.SVMClassification;
+import org.xtext.example.mydsl.mml.TrainingTest;
 import org.xtext.example.mydsl.mml.Validation;
 import org.xtext.example.mydsl.mml.ValidationMetric;
 import org.xtext.example.mydsl.mml.XFormula;
@@ -89,18 +91,15 @@ public class RCompilateur implements Compilateur{
 
 		int num;
 		String val = "";
-		switch(validation.getStratification().toString()) {
-		case "CrossValidation":
+		if (validation.getStratification() instanceof CrossValidation) {
 			num = validation.getStratification().getNumber();
 			val += "train_control <- trainControl(method=\"cv\", number="+num+")\r\n";
 			val += "scores <- train(data=data, trControl=train_control, method=\"nb\"\r\n)";
-			break;
-		case "TrainingTest":
+		}else if(validation.getStratification() instanceof TrainingTest) {
 			num = validation.getStratification().getNumber();
 			val += "sample <- sample.int(n = nrow(data), size = floor(.80*nrow(data)), replace = F)\r\n";
 			val += "train <- data[sample, ]\r\n";
 			val += "test  <- data[-sample, ]";
-			break;
 		}
 
 		String metric ="";
