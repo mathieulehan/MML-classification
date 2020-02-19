@@ -70,99 +70,99 @@ public class MmlParsingJavaTest {
 			List<ValidationMetric> messures = result.getValidation().getMetric();
 			
 			for (MLChoiceAlgorithm algos : AlgosList){
-			if(algos.getFramework().getLiteral().equals("scikit-learn")) {
-				String pythonImport = "import pandas as pd\n"; 
-				if (parsingInstruction != null) {			
-					System.err.println("parsing instruction..." + parsingInstruction);
-					csv_separator = parsingInstruction.getSep().toString();
-				}
-				String csvReading = "mml_data = pd.read_csv(" + mkValueInSingleQuote(fileLocation) + ", sep=" + 
-				mkValueInSingleQuote(csv_separator) + ")";						
-				
-				MLAlgorithm algo = algos.getAlgorithm();
-				String nameAlgo = algo.toString();
-				
-				switch(nameAlgo) {
-				  case "":
-				    // code block
-				    break;
-				  case "d":
-				    // code block
-				    break;
-				  default:
-				    // code block
-				}
-				
-				String pandasCode = pythonImport + csvReading;
-					pandasCode += "\nprint (mml_data)\n"; 
-				
-				Files.write(pandasCode.getBytes(), new File("mml"+indexModel+".py"));
-				// end of Python generation
-				
-			}
-			
-			else if(algos.getFramework().getName().equals("R")) {
-				String rImport = "library(rpart)";
-				
-				if (parsingInstruction != null) {
-					System.err.println("parsing instruction..." + parsingInstruction);
-					csv_separator = parsingInstruction.getSep().toString();
-				}
-				String csvReading = "data <- read.csv(\""+fileLocation+"\", header = FALSE, sep = \""+csv_separator+"\")";
-				String rCode = rImport + csvReading;
-				rCode += "print(data)";
-				Files.write(rCode.getBytes(), new File("mml"+indexModel+".R"));
-			}
-			
-			else if(algos.getFramework().getName().equals("Weka")) {
-				String wikaImport = "import wekaexamples.helper as helper "+ "from weka.core.converters import Loader";
-				
-				if (parsingInstruction != null) {
-					System.err.println("parsing instruction..." + parsingInstruction);
-					csv_separator = parsingInstruction.getSep().toString();
-				}
-				String loader = "loader = Loader(classname=\"weka.core.converters.CSVLoader\")";
-				String csvReading = "mml_data = loader.load_file(helper.get_data_dir() + " + csv_separator +" + "+ 
-				mkValueInSingleQuote(fileLocation);
-				String wekaCode = wikaImport + loader + csvReading;
-				wekaCode += "print(str(mml_data))";
-				Files.write(wekaCode.getBytes(), new File("mml"+indexModel+".py"));
-			}
-			
-			else if(algos.getFramework().getName().equals("xgboost")) {
-				String pythonImport = "import numpy as np\r\n" + 
-						"import xgboost as xgb\n"; 
-				if (parsingInstruction != null) {			
-					System.err.println("parsing instruction..." + parsingInstruction);
-					csv_separator = parsingInstruction.getSep().toString();
-				}
-				String csvReading = "dtrain = xgb.DMatrix(" + mkValueInSingleQuote(fileLocation) + ", sep=" + 
-				mkValueInSingleQuote(csv_separator) + ")";						
-				
-				MLAlgorithm algo = algos.getAlgorithm();
-				String nameAlgo = algo.toString();
-				
-				switch(nameAlgo) {
-				  case "":
-				    // code block
-				    break;
-				  case "d":
-				    // code block
-				    break;
-				  default:
-				    // code block
+				if(algos.getFramework().getLiteral().equals("scikit-learn")) {
+					String pythonImport = "import pandas as pd\n"; 
+					if (parsingInstruction != null) {			
+						System.err.println("parsing instruction..." + parsingInstruction);
+						csv_separator = parsingInstruction.getSep().toString();
+					}
+					String csvReading = "mml_data = pd.read_csv(" + mkValueInSingleQuote(fileLocation) + ", sep=" + 
+					mkValueInSingleQuote(csv_separator) + ")";						
+					
+					MLAlgorithm algo = algos.getAlgorithm();
+					String nameAlgo = algo.toString();
+					
+					switch(nameAlgo) {
+					  case "":
+					    // code block
+					    break;
+					  case "d":
+					    // code block
+					    break;
+					  default:
+					    // code block
+					}
+					
+					String pandasCode = pythonImport + csvReading;
+						pandasCode += "\nprint (mml_data)\n"; 
+					
+					Files.write(pandasCode.getBytes(), new File("mml"+indexModel+".py"));
+					// end of Python generation
+					
 				}
 				
-				String xgbCode = pythonImport + csvReading;
-					xgbCode += "param = {'max_depth':2, 'eta':1, 'silent':1, 'objective':'binary:logistic'}\r\n" + 
-							"num_round = 2"; 
-					xgbCode += "xgb.cv(param, dtrain, num_round, nfold=5,\r\n" + 
-							"       metrics={'error'}, seed=0,\r\n" + 
-							"       callbacks=[xgb.callback.print_evaluation(show_stdv=True)])";
+				else if(algos.getFramework().getName().equals("R")) {
+					String rImport = "library(rpart)";
+					
+					if (parsingInstruction != null) {
+						System.err.println("parsing instruction..." + parsingInstruction);
+						csv_separator = parsingInstruction.getSep().toString();
+					}
+					String csvReading = "data <- read.csv(\""+fileLocation+"\", header = FALSE, sep = \""+csv_separator+"\")";
+					String rCode = rImport + csvReading;
+					rCode += "print(data)";
+					Files.write(rCode.getBytes(), new File("mml"+indexModel+".R"));
+				}
 				
-				Files.write(xgbCode.getBytes(), new File("mml"+indexModel+".py"));
-				// end of Python generation
-			}
+				else if(algos.getFramework().getName().equals("Weka")) {
+					String wikaImport = "import wekaexamples.helper as helper "+ "from weka.core.converters import Loader";
+					
+					if (parsingInstruction != null) {
+						System.err.println("parsing instruction..." + parsingInstruction);
+						csv_separator = parsingInstruction.getSep().toString();
+					}
+					String loader = "loader = Loader(classname=\"weka.core.converters.CSVLoader\")";
+					String csvReading = "mml_data = loader.load_file(helper.get_data_dir() + " + csv_separator +" + "+ 
+					mkValueInSingleQuote(fileLocation);
+					String wekaCode = wikaImport + loader + csvReading;
+					wekaCode += "print(str(mml_data))";
+					Files.write(wekaCode.getBytes(), new File("mml"+indexModel+".py"));
+				}
+				
+				else if(algos.getFramework().getName().equals("xgboost")) {
+					String pythonImport = "import numpy as np\r\n" + 
+							"import xgboost as xgb\n"; 
+					if (parsingInstruction != null) {			
+						System.err.println("parsing instruction..." + parsingInstruction);
+						csv_separator = parsingInstruction.getSep().toString();
+					}
+					String csvReading = "dtrain = xgb.DMatrix(" + mkValueInSingleQuote(fileLocation) + ", sep=" + 
+					mkValueInSingleQuote(csv_separator) + ")";						
+					
+					MLAlgorithm algo = algos.getAlgorithm();
+					String nameAlgo = algo.toString();
+					
+					switch(nameAlgo) {
+					  case "":
+					    // code block
+					    break;
+					  case "d":
+					    // code block
+					    break;
+					  default:
+					    // code block
+					}
+					
+					String xgbCode = pythonImport + csvReading;
+						xgbCode += "param = {'max_depth':2, 'eta':1, 'silent':1, 'objective':'binary:logistic'}\r\n" + 
+								"num_round = 2"; 
+						xgbCode += "xgb.cv(param, dtrain, num_round, nfold=5,\r\n" + 
+								"       metrics={'error'}, seed=0,\r\n" + 
+								"       callbacks=[xgb.callback.print_evaluation(show_stdv=True)])";
+					
+					Files.write(xgbCode.getBytes(), new File("mml"+indexModel+".py"));
+					// end of Python generation
+				}
 			}
 			
 			/*

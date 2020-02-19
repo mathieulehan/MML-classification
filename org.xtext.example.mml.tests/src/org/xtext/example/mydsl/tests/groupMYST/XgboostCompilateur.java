@@ -36,12 +36,12 @@ public class XgboostCompilateur implements Compilateur{
 		
 		String predictivestr = "";
 		if (predictive.getColName() != null && predictive.getColName()!= "") {
-			//TODO
-			predictivestr = ""+"\r\n";
-		}else {
-			//dernière colonne predictive.getColumn()
-			//TODO
-			predictivestr = ""+"\r\n";
+			if (predictive.getColName() != null && predictive.getColName()!= "") {
+				predictivestr = "X = mml_data.drop(columns=[\""+predictive.getColName()+"\"])"+"\r\n";
+			}else {
+				//dernière colonne predictive.getColumn()
+				predictivestr = "X = mml_data.drop(mml_data.columns[len(mml_data.columns)-1])"+"\r\n";
+			}
 		}
 		
 		String predictorstr ="";
