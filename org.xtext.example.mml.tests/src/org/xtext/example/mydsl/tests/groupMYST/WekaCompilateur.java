@@ -1,7 +1,9 @@
 package org.xtext.example.mydsl.tests.groupMYST;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.List;
 
@@ -28,10 +30,9 @@ public class WekaCompilateur implements Compilateur {
 	private String fileResult;
 	private List<ValidationMetric> metrics;
 	
-
 	
 	public void execute() throws IOException{
-	String wikaImport = "import wekaexamples.helper as helper "+"\r\n"+ "from weka.core.converters import Loader"+"\r\n";
+	String wekaImport = "import wekaexamples.helper as helper "+"\r\n"+ "from weka.core.converters import Loader"+"\r\n";
 	String loader = "loader = Loader(classname=\"weka.core.converters.CSVLoader\")"+"\r\n";
 	String csvReading = "mml_data = loader.load_file(helper.get_data_dir() + " + separator +" + "+ 
 	mkValueInSingleQuote(dataInput.getFilelocation())+")\r\n";
@@ -50,11 +51,14 @@ public class WekaCompilateur implements Compilateur {
 	
 	String algostr ="";
 	if(algo instanceof SVM) {
-		  //TODO
-		  SVM svm = (SVM)algo;
-		  algostr = "algo = "+"\r\n";
+//	    Y a po !!
+	    SVM svm = (SVM)algo;
+		algostr = "algo = "+"\r\n";
 	}else if(algo instanceof DT) {
 		 DT dt = (DT)algo;
+//			Classifier(classname="weka.classifiers.trees.J48")
+//		 	classifier.set_property("confidenceFactor", typeconv.double_to_float(0.3))
+//		    classifier.build_classifier(iris_data)
 			int max_depth = dt.getMax_depth();
 			if(max_depth != 0) {
 				 algostr = "algo = "+"\r\n";
@@ -63,11 +67,14 @@ public class WekaCompilateur implements Compilateur {
 			}
 			 
 	}else if(algo instanceof RandomForest ) {
-		  //TODO
+//			classifier2 = Classifier(classname="weka.classifiers.trees.RandomForest")
+//			evaluation2 = Evaluation(diabetes_data)
+//			evaluation2.crossvalidate_model(classifier2, diabetes_data, 10, Random(42))
 		  algostr = "algo = "+"\r\n";
 	}else if(algo instanceof LogisticRegression) {
 		  //TODO
 		  algostr = "algo = "+"\r\n";
+		  // y a pas
 	}
 	
 
@@ -75,13 +82,17 @@ public class WekaCompilateur implements Compilateur {
 	String val = "";
 	switch(validation.getStratification().toString()) {
 	  case "CrossValidation":
-		  //TODO
+//		  classifier = Classifier(classname="weka.classifiers.bayes.NaiveBayes")
+//		  pred_output = PredictionOutput(classname="weka.classifiers.evaluation.output.prediction.PlainText", options=["-distribution"])
+//		  evaluation = Evaluation(diabetes_data)
+//		  evaluation.crossvalidate_model(classifier, diabetes_data, 10, Random(42), output=pred_output)
 		  num = validation.getStratification().getNumber();
 		  val = ""+"\r\n";
 		  
 	    break;
 	  case "TrainingTest":
 		  //TODO
+		  //y a pas
 		  num = validation.getStratification().getNumber();
 		  val = ""+"\r\n";
 	    break;
@@ -93,46 +104,55 @@ public class WekaCompilateur implements Compilateur {
 	switch(laMetric.getName()) {
 	  case "balanced_accuracy":
 		  //TODO
+		  //y a pas
 		   metric +=""+"\r\n";
 		   affiche  +=""+"\r\n";
 	    break;
 	  case "recall":
 		  //TODO
-		   metric +=""+"\r\n";
+		  //print("recall: " + str(evaluation.recall(1)))
+		   metric +="str(evaluation.recall(1)"+"\r\n";
 		   affiche  +=""+"\r\n";
 	    break;
 	  case "precision":
 		  //TODO
-		   metric +=""+"\r\n";
+		  //print("precision: " + str(evaluation.precision(1)))
+		   metric +="str(evaluation.precision(1)"+"\r\n";
 		   affiche  +=""+"\r\n";
 		    break;
 	  case "F1":
 		  //TODO
+		  //y a pas
 		   metric +=""+"\r\n";
 		   affiche  +=""+"\r\n";
 		    break;
 	  case "accuracy":
 		  //TODO
+		  //y a pas
 		   metric +=""+"\r\n";
 		   affiche  +=""+"\r\n";
 		    break;
 	  case "macro_recall":
 		  //TODO
+		  // y a pas
 		   metric +=""+"\r\n";
 		   affiche  +=""+"\r\n";
 		    break;
 	  case "macro_precision":
 		  //TODO
+		  //y a pas
 		   metric +=""+"\r\n";
 		   affiche  +=""+"\r\n";
 		    break;
 	  case "macro_F1":
 		  //TODO
+		  //(pas sur de moi) print("unweightedMacroFmeasure: " + str(evaluation.unweighted_macro_f_measure)) ?
 		   metric +=""+"\r\n";
 		   affiche  +=""+"\r\n";
 		    break;
 	  case "macro_accuracy":
 		  //TODO
+		  //y a pas
 		   metric +=""+"\r\n";
 		   affiche  +=""+"\r\n";
 		    break;
@@ -140,9 +160,12 @@ public class WekaCompilateur implements Compilateur {
 
 	}
 	
-	String wekaCode = wikaImport + loader + csvReading + predictivestr +predictorstr + algostr + val + metric +  affiche  ;
+	String pandasCode = wekaImport + csvReading + predictorstr + predictivestr + algostr + val + metric + affiche;
 	Long date = new Date().getTime();
-	Files.write(wekaCode.getBytes(), new File("mml_weka_"+date+".py"));
+	Files.write(pandasCode.getBytes(), new File("mml_Weka_"+date+".py"));
+
+	Process p = Runtime.getRuntime().exec("python mml"+date+".py");
+	BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 		
 	}
 	public void configure(MLAlgorithm algo, DataInput dataInput, Validation validation, String separator, FormulaItem predictive, XFormula predictore,  String fileResult) {
