@@ -40,7 +40,7 @@ public class WekaCompilateur implements Compilateur {
 	mkValueInSingleQuote(dataInput.getFilelocation())+")\r\n";
 	
 	String predictivestr = "";
-	if (predictive.getColName() != null && predictive.getColName()!= "") {
+	if (predictive != null) {
 		//TODO
 		predictivestr = "pred_output = PredictionOutput(classname=\"weka.classifiers.evaluation.output.prediction.CSV\", options=[\"-p\", \"1\"])"+"\r\n";
 	}else {

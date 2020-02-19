@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import org.xtext.example.mydsl.mml.CrossValidation;
 import org.xtext.example.mydsl.mml.DT;
 import org.xtext.example.mydsl.mml.DataInput;
 import org.xtext.example.mydsl.mml.FormulaItem;
@@ -12,6 +13,7 @@ import org.xtext.example.mydsl.mml.LogisticRegression;
 import org.xtext.example.mydsl.mml.MLAlgorithm;
 import org.xtext.example.mydsl.mml.RandomForest;
 import org.xtext.example.mydsl.mml.SVM;
+import org.xtext.example.mydsl.mml.TrainingTest;
 import org.xtext.example.mydsl.mml.Validation;
 import org.xtext.example.mydsl.mml.ValidationMetric;
 import org.xtext.example.mydsl.mml.XFormula;
@@ -35,7 +37,7 @@ public class XgboostCompilateur implements Compilateur{
 				mkValueInSingleQuote(separator) + ")"+"\r\n";	
 		
 		String predictivestr = "";
-		if (predictive.getColName() != null && predictive.getColName()!= "") {
+		if (predictive != null ) {
 			//TODO
 			predictivestr = ""+"\r\n";
 		}else {
@@ -44,7 +46,7 @@ public class XgboostCompilateur implements Compilateur{
 			predictivestr = ""+"\r\n";
 		}
 		
-		String predictorstr ="";
+		String predictorstr =""+"\r\n";
 		
 		
 		String algostr ="";
@@ -71,17 +73,15 @@ public class XgboostCompilateur implements Compilateur{
 		
 		int num;
 		String val = "";
-		switch(validation.getStratification().toString()) {
-		  case "CrossValidation":
+		if (validation.getStratification() instanceof CrossValidation) {
 			  //TODO
 			  num = validation.getStratification().getNumber();
 			  val = ""+"\r\n";
-		    break;
-		  case "TrainingTest":
+		}else if (validation.getStratification() instanceof TrainingTest) {
 			  //TODO
 			  num = validation.getStratification().getNumber();
 			  val = ""+"\r\n";
-		    break;
+		
 		}
 		
 		String affiche ="";

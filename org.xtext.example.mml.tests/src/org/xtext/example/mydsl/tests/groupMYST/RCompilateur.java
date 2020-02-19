@@ -41,7 +41,7 @@ public class RCompilateur implements Compilateur{
 		String csvReading = "data <- read.csv(\""+dataInput.getFilelocation()+"\", header = FALSE, sep = \""+separator+"\")";
 
 		String predictivestr = "";
-		if (predictive.getColName() != null && predictive.getColName()!= "") {
+		if (predictive!= null ) {
 			predictivestr = "X <- data$"+predictive.getColName()+" <- NULL"+"\r\n";
 		}else {
 			//dernière colonne predictive.getColumn()
