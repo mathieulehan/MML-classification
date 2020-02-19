@@ -103,7 +103,7 @@ public class WekaCompilateur implements Compilateur {
 	String metric ="";
 	String affiche ="";
 	for (ValidationMetric laMetric : metrics) {
-	switch(laMetric.getName()) {
+	switch(laMetric.getLiteral()) {
 	  case "balanced_accuracy":
 		  //TODO
 		  //y a pas

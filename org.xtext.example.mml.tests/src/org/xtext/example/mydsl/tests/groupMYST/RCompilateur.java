@@ -106,7 +106,7 @@ public class RCompilateur implements Compilateur{
 		String affiche  ="";
 		for (ValidationMetric laMetric : metrics) {
 			algostr += "cm <- confusionMatrix(data, train(data)\r\n";
-			switch(laMetric.getName()) {
+			switch(laMetric.getLiteral()) {
 			case "balanced_accuracy":
 				//TODO
 				metric +="balanceA <- cm$overall[['Balanced Accuracy']]"+"\r\n";

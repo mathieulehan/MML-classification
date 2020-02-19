@@ -128,7 +128,7 @@ public class ScikitLearnCompilateur implements Compilateur {
 		String affiche ="";
 		String metric ="";
 		for (ValidationMetric laMetric : metrics) {
-		switch(laMetric.getName()) {
+		switch(laMetric.getLiteral()) {
 		  case "balanced_accuracy":
 				pythonImport +="from sklearn.metrics import balanced_accuracy_score"+"\r\n";
 			   metric +="balanceA = balanced_accuracy_score(Y, y_pred)"+"\r\n";

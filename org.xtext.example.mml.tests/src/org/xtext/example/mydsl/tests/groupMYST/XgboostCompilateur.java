@@ -87,7 +87,7 @@ public class XgboostCompilateur implements Compilateur{
 		String affiche ="";
 		String metric ="";
 		for (ValidationMetric laMetric : metrics) {
-		switch(laMetric.getName()) {
+		switch(laMetric.getLiteral()) {
 		  case "balanced_accuracy":
 			  //TODO
 			   metric +=""+"\r\n";
