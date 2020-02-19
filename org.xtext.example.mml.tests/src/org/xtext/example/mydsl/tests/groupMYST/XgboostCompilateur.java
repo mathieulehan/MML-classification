@@ -1,7 +1,10 @@
 package org.xtext.example.mydsl.tests.groupMYST;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.List;
 
@@ -48,14 +51,16 @@ public class XgboostCompilateur implements Compilateur{
 		
 		String predictorstr ="";
 		
-		
+		String NameAlgo ="";		
 		String algostr ="";
 		if(algo instanceof SVM) {
 			  //TODO
+			NameAlgo = "SVM";
 			  SVM svm = (SVM)algo;
 			  algostr = "algo = "+"\r\n";
 		}else if(algo instanceof DT) {
 			 DT dt = (DT)algo;
+				NameAlgo = "Decision Tree";
 				int max_depth = dt.getMax_depth();
 				 
 				if(max_depth != 0) {
@@ -65,9 +70,11 @@ public class XgboostCompilateur implements Compilateur{
 				}
 		}else if(algo instanceof RandomForest ) {
 			  //TODO
+			NameAlgo = "Random Forest";
 			  algostr = "algo = "+"\r\n";
 		}else if(algo instanceof LogisticRegression) {
 			  //TODO
+			NameAlgo = "Logistic Regression";
 			  algostr = "algo = "+"\r\n";
 		}
 		
@@ -84,6 +91,7 @@ public class XgboostCompilateur implements Compilateur{
 		
 		}
 		
+		boolean writeInFile = false;
 		String affiche ="";
 		String metric ="";
 		for (ValidationMetric laMetric : metrics) {
@@ -97,6 +105,7 @@ public class XgboostCompilateur implements Compilateur{
 			  //TODO
 			  metric +=""+"\r\n";
 			  affiche  +=""+"\r\n";
+			  writeInFile = true;
 		    break;
 		  case "precision":
 			  //TODO
@@ -140,6 +149,18 @@ public class XgboostCompilateur implements Compilateur{
 		String xgBoostCode = boostImport + csvReading+ predictivestr +predictorstr  + algostr + val + metric +affiche;
 		Long date = new Date().getTime();
 		Files.write(xgBoostCode.getBytes(), new File("mml_Xgboost_"+date+".py"));
+		
+		long debut = System.currentTimeMillis();
+		Process p = Runtime.getRuntime().exec("python mml_Xgboost_"+date+".py");
+		long fin = System.currentTimeMillis()-debut;
+		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		
+		if (writeInFile) {
+			File myFile = new File("recall.csv");
+			FileOutputStream oFile = new FileOutputStream(myFile, true);
+			oFile.write((dataInput.getFilelocation() +";"+NameAlgo+";ScikitLearn;"+fin+";"+in.read()+"\n").getBytes());
+			oFile.close();
+			}
 
 	}
 	

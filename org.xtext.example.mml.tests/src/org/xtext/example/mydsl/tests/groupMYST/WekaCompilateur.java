@@ -2,6 +2,7 @@ package org.xtext.example.mydsl.tests.groupMYST;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Date;
@@ -48,13 +49,15 @@ public class WekaCompilateur implements Compilateur {
 		//TODO
 		predictivestr = ""+"\r\n";
 	}
-	
+	//TODO
 	String predictorstr ="";
-	int num;
 	
+	int num;
+	 String NameAlgo = "";
 	String algostr ="";
 	if(algo instanceof SVM) {
 //	    Y a po !!
+		 NameAlgo = "SVM";
 	    SVM svm = (SVM)algo;
 		algostr = "algo = "+"\r\n";
 	}else if(algo instanceof DT) {
@@ -62,7 +65,7 @@ public class WekaCompilateur implements Compilateur {
 //			Classifier(classname="weka.classifiers.trees.J48")
 //		 	classifier.set_property("confidenceFactor", typeconv.double_to_float(0.3))
 //		    classifier.build_classifier(iris_data)
-			
+		 NameAlgo = "Decision Tree";
 			 
 	}else if(algo instanceof RandomForest ) {
 //			classifier = Classifier(classname="weka.classifiers.trees.RandomForest")
@@ -72,10 +75,12 @@ public class WekaCompilateur implements Compilateur {
 		  algostr = "classifier = Classifier(classname=\"weka.classifiers.trees.RandomForest\")"+"\r\n";
 		  algostr += "evaluation = Evaluation("+ dataInput +")"+"\r\n";
 		  algostr += "evaluation.crossvalidate_model(classifier, "+ dataInput +", "+ num +", Random(42))"+"\r\n";
+		  NameAlgo = "Random Forest";
 	}else if(algo instanceof LogisticRegression) {
 		  //TODO
 		  algostr = "algo = "+"\r\n";
 		  // y a pas
+		  NameAlgo = "Logistic Regression";
 	}
 	
 
@@ -102,6 +107,7 @@ public class WekaCompilateur implements Compilateur {
 	
 	String metric ="";
 	String affiche ="";
+	boolean writeInFile = false;
 	for (ValidationMetric laMetric : metrics) {
 	switch(laMetric.getLiteral()) {
 	  case "balanced_accuracy":
@@ -115,6 +121,7 @@ public class WekaCompilateur implements Compilateur {
 		  //print("recall: " + str(evaluation.recall(1)))
 		   metric +="str(evaluation.recall(1)"+"\r\n";
 		   affiche  +=""+"\r\n";
+		   writeInFile = true;
 	    break;
 	  case "precision":
 		  //TODO
@@ -166,9 +173,17 @@ public class WekaCompilateur implements Compilateur {
 	Long date = new Date().getTime();
 	Files.write(pandasCode.getBytes(), new File("mml_Weka_"+date+".py"));
 
-	Process p = Runtime.getRuntime().exec("python mml"+date+".py");
+	long debut = System.currentTimeMillis();
+	Process p = Runtime.getRuntime().exec("python mml_Weka_"+date+".py");
+	long fin = System.currentTimeMillis()-debut;
 	BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 		
+	if (writeInFile) {
+		File myFile = new File("recall.csv");
+		FileOutputStream oFile = new FileOutputStream(myFile, true);
+		oFile.write((dataInput.getFilelocation() +";"+NameAlgo+";ScikitLearn;"+fin+";"+in.read()+"\n").getBytes());
+		oFile.close();
+		}
 	}
 	public void configure(MLAlgorithm algo, DataInput dataInput, Validation validation, String separator, FormulaItem predictive, XFormula predictore,  String fileResult) {
 		this.algo = algo;

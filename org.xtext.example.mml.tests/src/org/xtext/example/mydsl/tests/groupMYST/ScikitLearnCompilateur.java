@@ -39,6 +39,7 @@ public class ScikitLearnCompilateur implements Compilateur {
 
 	
 	public void execute() throws IOException {
+		
 		String pythonImport = "import pandas as pd\r\n"; 
 		String csvReading = "mml_data = pd.read_csv(" + mkValueInSingleQuote(dataInput.getFilelocation()) + ", sep=" + 
 		mkValueInSingleQuote(separator) + ")\r\n";	
@@ -48,12 +49,13 @@ public class ScikitLearnCompilateur implements Compilateur {
 			predictivestr = "X = mml_data.drop(columns=[\""+predictive.getColName()+"\"])"+"\r\n";
 		}else {
 			//dernière colonne predictive.getColumn()
-			predictivestr = "X = mml_data.drop(mml_data.columns[len(mml_data.columns)-1])"+"\r\n";
+			predictivestr = "X = mml_data.drop(columns=mml_data.columns[len(mml_data.columns)-1])"+"\r\n";
 		}
 		
 		//TODO
 		String predictorstr ="Y = mml_data[mml_data.columns[len(mml_data.columns)-1]] "+"\r\n";
 		
+		String NameAlgo= "";
 		String algostr ="";
 		if(algo instanceof SVM) {
 			SVM svm = (SVM)algo;
@@ -63,7 +65,8 @@ public class ScikitLearnCompilateur implements Compilateur {
 			
 			if(svm.isClassificationSpecified()) {
 				SVMClassification classification = svm.getSvmclassification();
-				switch(classification.getName()) {
+				NameAlgo = classification.getLiteral();
+				switch(classification.getLiteral()) {
 					case "C-classification":
 						pythonImport +="from sklearn.svm import SVC";
 						if(svm.isKernelSpecified()) {
@@ -94,6 +97,7 @@ public class ScikitLearnCompilateur implements Compilateur {
 			 DT dt = (DT)algo;
 				int max_depth = dt.getMax_depth();
 			pythonImport += " from sklearn.tree import DecisionTreeClassifier"+"\r\n";
+			NameAlgo = "Decision Tree";
 			if(max_depth != 0) {
 				algostr = "algo = DecisionTreeClassifier(max_depth="+max_depth+")"+"\r\n";
 			}else {
@@ -102,9 +106,11 @@ public class ScikitLearnCompilateur implements Compilateur {
 		}else if(algo instanceof RandomForest ) {
 			pythonImport += "from sklearn.ensemble import RandomForestClassifier";
 			algostr = "algo = RandomForestClassifier()\r\n" ;
+			NameAlgo = "Random Forest";
 		}else if(algo instanceof LogisticRegression) {
 			pythonImport += "from sklearn.linear_model import LogisticRegression";
 			algostr = "algo = LogisticRegression() "+"\r\n";
+			NameAlgo = "Logistic Regression";
 		}
 		
 		String val = "";
@@ -127,6 +133,7 @@ public class ScikitLearnCompilateur implements Compilateur {
 		
 		String affiche ="";
 		String metric ="";
+		boolean writeInFile = false;
 		for (ValidationMetric laMetric : metrics) {
 		switch(laMetric.getLiteral()) {
 		  case "balanced_accuracy":
@@ -143,6 +150,7 @@ public class ScikitLearnCompilateur implements Compilateur {
 			  pythonImport +="from sklearn.metrics import recall_score"+"\r\n";
 			  metric +="recall = recall_score(Y, y_pred,average='micro' )"+"\r\n";
 			  affiche  +="print(recall)"+"\r\n";
+			  writeInFile = true;
 			    break;
 		  case "F1":
 			  pythonImport +="from sklearn.metrics import f1_score"+"\r\n";
@@ -180,14 +188,18 @@ public class ScikitLearnCompilateur implements Compilateur {
 		String pandasCode = pythonImport + csvReading + predictorstr + predictivestr + algostr + val + metric + affiche;
 		Long date = new Date().getTime();
 		Files.write(pandasCode.getBytes(), new File("mml_ScikitLearn_"+date+".py"));
-	
-		Process p = Runtime.getRuntime().exec("mml_ScikitLearn_"+date+".py");
+
+		long debut = System.currentTimeMillis();
+		Process p = Runtime.getRuntime().exec("python mml_ScikitLearn_"+date+".py");
+		long fin = System.currentTimeMillis()-debut;
 		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 		
+		if (writeInFile) {
 		File myFile = new File("recall.csv");
-		FileOutputStream oFile = new FileOutputStream(myFile, false);
-		oFile.write(("ScikitLearn;").getBytes());
+		FileOutputStream oFile = new FileOutputStream(myFile, true);
+		oFile.write((dataInput.getFilelocation() +";"+NameAlgo+";ScikitLearn;"+fin+";"+in.read()+"\n").getBytes());
 		oFile.close();
+		}
 
 	}
 	public void configure(MLAlgorithm algo, DataInput dataInput, Validation validation, String separator, 	FormulaItem predictive, XFormula predictore , String fileResult) {

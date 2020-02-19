@@ -1,7 +1,10 @@
 package org.xtext.example.mydsl.tests.groupMYST;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.List;
 
@@ -50,9 +53,11 @@ public class RCompilateur implements Compilateur{
 
 		String predictorstr ="Y <- data.[ncol(data.columns)-1]\r\n";
 
+		String NameAlgo ="";
 		String algostr ="";
 		if(algo instanceof SVM) {
 			SVM svm = (SVM)algo;
+			NameAlgo = "SVM";
 			if (svm.isClassificationSpecified()) {
 				algostr += "install.packages(\"e1071\")\r\n";
 				algostr += "library(e1071)\r\n";
@@ -75,7 +80,8 @@ public class RCompilateur implements Compilateur{
 			algostr += "set.seed(123)\r\n";
 			algostr += "train_indices <- sample(1:n, n_train)\r\n";
 			algostr += "train <- data[train_indicices, ]\r\n";
-			algostr += "algo <- rpart(formula = Y ~ X, data = data, method = \"class\")\r\n";				 
+			algostr += "algo <- rpart(formula = Y ~ X, data = data, method = \"class\")\r\n";
+			 NameAlgo = "Decision Tree";
 		}else if(algo instanceof RandomForest ) {
 			algostr += "install.packages(\"randomForest\")\r\n";
 			algostr += "install.packages(\"dplyr\")\r\n";
@@ -84,8 +90,10 @@ public class RCompilateur implements Compilateur{
 			algostr += "library(randomForest)\r\n";
 			algostr += "set.seed(123)\r\n";
 			algostr += "algo <- randomForest(Y ~ X, data = data)";
+			 NameAlgo = "Random Forest";
 		}else if(algo instanceof LogisticRegression) {
 			algostr += "glm.fit <- gml(Y ~ X, data = data, family = binomial)";
+			 NameAlgo = "Logistic Regression";
 		}
 
 
@@ -104,6 +112,7 @@ public class RCompilateur implements Compilateur{
 
 		String metric ="";
 		String affiche  ="";
+		boolean writeInFile = false;
 		for (ValidationMetric laMetric : metrics) {
 			algostr += "cm <- confusionMatrix(data, train(data)\r\n";
 			switch(laMetric.getLiteral()) {
@@ -116,6 +125,7 @@ public class RCompilateur implements Compilateur{
 				//TODO
 				metric +="recall <- cm$overall[['Recall']]"+"\r\n";
 				affiche  +="print(recall)"+"\r\n";
+				writeInFile = true;
 				break;
 			case "precision":
 				//TODO
@@ -159,6 +169,19 @@ public class RCompilateur implements Compilateur{
 		String rCode = rImport + csvReading + predictivestr +predictorstr  + algostr + val + metric +affiche;
 		Long date = new Date().getTime();
 		Files.write(rCode.getBytes(), new File("mml_R"+date+".R"));		
+		
+		long debut = System.currentTimeMillis();
+		Process p = Runtime.getRuntime().exec("R mml_R"+date+".R");
+		long fin = System.currentTimeMillis()-debut;
+		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		
+		if (writeInFile) {
+			File myFile = new File("recall.csv");
+			FileOutputStream oFile = new FileOutputStream(myFile, true);
+			oFile.write((dataInput.getFilelocation() +";"+NameAlgo+";ScikitLearn;"+fin+";"+in.read()+"\n").getBytes());
+			oFile.close();
+			}
+
 	}
 	public void configure(MLAlgorithm algo, DataInput dataInput, Validation validation, String separator,  FormulaItem predictive, XFormula predictore, String fileResult) {
 		this.algo = algo;
