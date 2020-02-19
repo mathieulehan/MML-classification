@@ -55,17 +55,6 @@ public class MmlParsingJavaTest {
 	}		
 	
 	@Test
-	public void createFileScikitLearn() throws IOException, Exception {
-		MMLModel result = parseHelper.parse(FileUtils.readFileToString(new File("src" + File.separator + "org" + 
-				File.separator + "xtext" + File.separator + "example" + File.separator + "mydsl" + File.separator + "tests" + 
-				File.separator + "groupMYST" + File.separator + "mml" + 1 + ".mml"), Charset.defaultCharset()));
-	
-		MainCompilateur compile = new MainCompilateur(result, "tst.csv");
-		compile.run();
-	}
-	
-	
-	@Test
 	public void compileDataInput() throws Exception {
 		ArrayList<MMLModel> listMmlFiles = (ArrayList<MMLModel>) loadModel();
 		int indexModel = 1;
@@ -109,6 +98,19 @@ public class MmlParsingJavaTest {
 		
 	}
 
+	
+	@Test
+	public void createFileScikitLearn() throws IOException, Exception {
+		MMLModel result = parseHelper.parse(FileUtils.readFileToString(new File("src" + File.separator + "org" + 
+				File.separator + "xtext" + File.separator + "example" + File.separator + "mydsl" + File.separator + "tests" + 
+				File.separator + "groupMYST" + File.separator + "mml" + 2 + ".mml"), Charset.defaultCharset()));
+	
+		MainCompilateur compile = new MainCompilateur(result, "tst.csv");
+		compile.run();
+	}
+	
+	
+	
 	private String mkValueInSingleQuote(String val) {
 		return "'" + val + "'";
 	}
