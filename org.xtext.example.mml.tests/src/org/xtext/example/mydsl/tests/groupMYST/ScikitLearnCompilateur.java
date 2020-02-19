@@ -193,6 +193,19 @@ public class ScikitLearnCompilateur implements Compilateur {
 		Process p = Runtime.getRuntime().exec("python mml_ScikitLearn_"+date+".py");
 		long fin = System.currentTimeMillis()-debut;
 		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		String line; 
+	
+		while ((line = in.readLine()) != null) {
+			System.out.println(line);
+		}
+		BufferedReader inError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+		
+		
+	
+		while ((line = inError.readLine()) != null) {
+			System.out.println(line);
+		}
+		
 		
 		if (writeInFile) {
 		File myFile = new File("recall.csv");
