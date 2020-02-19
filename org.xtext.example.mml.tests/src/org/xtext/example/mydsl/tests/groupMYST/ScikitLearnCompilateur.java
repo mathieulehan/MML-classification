@@ -48,6 +48,8 @@ public class ScikitLearnCompilateur implements Compilateur {
 			predictivestr = "X = mml_data.drop(mml_data.columns[len(mml_data.columns)-1])"+"\r\n";
 		}
 		
+	
+		
 		//TODO
 		String predictorstr ="Y = mml_data[mml_data.columns[len(mml_data.columns)-1]] ";
 		
@@ -57,24 +59,34 @@ public class ScikitLearnCompilateur implements Compilateur {
 			SVM svm = (SVM)algo;
 			String c = svm.getC();
 			String gamma = svm.getGamma();
-			
-			if(svm.isKernelSpecified()) {
-				SVMKernel kernel = svm.getKernel();
-			}
+
 			
 			if(svm.isClassificationSpecified()) {
 				SVMClassification classification = svm.getSvmclassification();
 				switch(classification.getName()) {
 					case "C-classification":
 						pythonImport +="from sklearn.svm import SVC";
-						algostr =	"algo = SVC(gamma="+gamma+").fit(X, Y)";
-					case "nu-classification":
+						if(svm.isKernelSpecified()) {
+						algostr = "algo = SVC(C="+c+", kernel="+svm.getKernel().getName()+",gamma="+gamma+")";
+						}else {
+							algostr = "algo = SVC(C="+c+",gamma="+gamma+")";
+						}
+						case "nu-classification":
 						pythonImport +="from sklearn.svm import NuSVC";
-						algostr = "algo = NuSVC().fit(X, Y)";
+						if(svm.isKernelSpecified()) {
+						algostr = "algo = NuSVC(kernel="+svm.getKernel().getName()+",gamma="+gamma+")";
+						}else {
+							algostr = "algo = NuSVC(gamma="+gamma+")";
+						}
 					case "one-classification":
 						pythonImport +="from sklearn.svm import OneClassSVM";
-						algostr = "algo = OneClassSVM(gamma="+gamma+").fit(X)";
-				}
+						if(svm.isKernelSpecified()) {
+						algostr = "algo = OneClassSVM(kernel="+svm.getKernel().getName()+",gamma="+gamma+")";
+						}else {
+							algostr = "algo = OneClassSVM(gamma="+gamma+")";
+							
+						}
+						}
 			}
 			
 	
@@ -89,10 +101,10 @@ public class ScikitLearnCompilateur implements Compilateur {
 			}
 		}else if(algo instanceof RandomForest ) {
 			pythonImport += "from sklearn.ensemble import RandomForestClassifier";
-			algostr = "algo = RandomForestClassifier().fit(X, Y)\r\n" ;
+			algostr = "algo = RandomForestClassifier()\r\n" ;
 		}else if(algo instanceof LogisticRegression) {
 			pythonImport += "from sklearn.linear_model import LogisticRegression";
-			algostr = "algo = LogisticRegression().fit(X, Y) "+"\r\n";
+			algostr = "algo = LogisticRegression() "+"\r\n";
 		}
 		
 		String val = "";
@@ -101,14 +113,14 @@ public class ScikitLearnCompilateur implements Compilateur {
 		  case "CrossValidation":
 				 pythonImport += "from sklearn.model_selection import cross_validate"+"\r\n";
 				 num = validation.getStratification().getNumber();
-			  val = "scores = cross_validate(algo, X, Y, cv="+num+")"+"\r\n";
+			  val = "cross_validate(algo, X, Y, cv="+num+")"+"\r\n";
 		    break;
 		  case "TrainingTest":
 			  pythonImport += "from sklearn.model_selection import train_test_split"+"\r\n";
 			  num = validation.getStratification().getNumber();
 			  val = "test_size =" +num+"\r\n" + 
 			  		"X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=test_size)"+"\r\n";
-			  val +="scores =  algo.fit(X_train, y_train)"+"\r\n";
+			  val +="algo.fit(X_train, y_train)"+"\r\n";
 			  break;
 		}
 		
