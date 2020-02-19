@@ -40,7 +40,7 @@ public class WekaCompilateur implements Compilateur {
 	String predictivestr = "";
 	if (predictive.getColName() != null && predictive.getColName()!= "") {
 		//TODO
-		predictivestr = ""+"\r\n";
+		predictivestr = "pred_output = PredictionOutput(classname=\"weka.classifiers.evaluation.output.prediction.CSV\", options=[\"-p\", \"1\"])"+"\r\n";
 	}else {
 		//dernière colonne predictive.getColumn()
 		//TODO
@@ -48,6 +48,7 @@ public class WekaCompilateur implements Compilateur {
 	}
 	
 	String predictorstr ="";
+	int num;
 	
 	String algostr ="";
 	if(algo instanceof SVM) {
@@ -59,18 +60,16 @@ public class WekaCompilateur implements Compilateur {
 //			Classifier(classname="weka.classifiers.trees.J48")
 //		 	classifier.set_property("confidenceFactor", typeconv.double_to_float(0.3))
 //		    classifier.build_classifier(iris_data)
-			int max_depth = dt.getMax_depth();
-			if(max_depth != 0) {
-				 algostr = "algo = "+"\r\n";
-			}else {
-				 algostr = "algo = "+"\r\n";
-			}
+			
 			 
 	}else if(algo instanceof RandomForest ) {
-//			classifier2 = Classifier(classname="weka.classifiers.trees.RandomForest")
-//			evaluation2 = Evaluation(diabetes_data)
-//			evaluation2.crossvalidate_model(classifier2, diabetes_data, 10, Random(42))
-		  algostr = "algo = "+"\r\n";
+//			classifier = Classifier(classname="weka.classifiers.trees.RandomForest")
+//			evaluation = Evaluation(diabetes_data)
+//			evaluation.crossvalidate_model(classifier, diabetes_data, 10, Random(42))
+		  num = validation.getStratification().getNumber();
+		  algostr = "classifier = Classifier(classname=\"weka.classifiers.trees.RandomForest\")"+"\r\n";
+		  algostr += "evaluation = Evaluation("+ dataInput +")"+"\r\n";
+		  algostr += "evaluation.crossvalidate_model(classifier, "+ dataInput +", "+ num +", Random(42))"+"\r\n";
 	}else if(algo instanceof LogisticRegression) {
 		  //TODO
 		  algostr = "algo = "+"\r\n";
@@ -78,15 +77,16 @@ public class WekaCompilateur implements Compilateur {
 	}
 	
 
-	int num;
 	String val = "";
 	switch(validation.getStratification().toString()) {
 	  case "CrossValidation":
 //		  classifier = Classifier(classname="weka.classifiers.bayes.NaiveBayes")
-//		  pred_output = PredictionOutput(classname="weka.classifiers.evaluation.output.prediction.PlainText", options=["-distribution"])
 //		  evaluation = Evaluation(diabetes_data)
 //		  evaluation.crossvalidate_model(classifier, diabetes_data, 10, Random(42), output=pred_output)
 		  num = validation.getStratification().getNumber();
+		  algostr = "classifier = Classifier(classname=\"weka.classifiers.bayes.NaiveBayes\")"+"\r\n";
+		  algostr += "evaluation = Evaluation("+ dataInput +")"+"\r\n";
+		  algostr += "evaluation.crossvalidate_model(classifier, "+ dataInput +", "+ num +", Random(42))"+"\r\n";
 		  val = ""+"\r\n";
 		  
 	    break;
