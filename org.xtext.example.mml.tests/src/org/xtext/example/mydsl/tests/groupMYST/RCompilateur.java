@@ -79,9 +79,8 @@ public class RCompilateur implements Compilateur{
 			algostr += "n_train <- round(0.8 * n)\r\n";
 			algostr += "set.seed(123)\r\n";
 			algostr += "train_indices <- sample(1:n, n_train)\r\n";
-			algostr += "train <- data[train_indices, ]\r\n";
-			algostr += "algo <- rpart(formula = Y ~ X, data = data, method = \"class\")\r\n";
-			 NameAlgo = "Decision Tree";
+			algostr += "algo <- rpart(unlist(Y)~., data = data, method = \"class\")\r\n";
+			NameAlgo = "Decision Tree";
 		}else if(algo instanceof RandomForest ) {
 			algostr += "install.packages(\"randomForest\")\r\n";
 			algostr += "install.packages(\"dplyr\")\r\n";
@@ -90,10 +89,10 @@ public class RCompilateur implements Compilateur{
 			algostr += "library(randomForest)\r\n";
 			algostr += "set.seed(123)\r\n";
 			algostr += "algo <- randomForest(Y ~ X, data = data)";
-			 NameAlgo = "Random Forest";
+			NameAlgo = "Random Forest";
 		}else if(algo instanceof LogisticRegression) {
 			algostr += "glm.fit <- gml(Y ~ X, data = data, family = binomial)";
-			 NameAlgo = "Logistic Regression";
+			NameAlgo = "Logistic Regression";
 		}
 
 
@@ -108,6 +107,7 @@ public class RCompilateur implements Compilateur{
 			val += "sample <- sample.int(n = nrow(data), size = floor(.80*nrow(data)), replace = F)\r\n";
 			val += "train <- data[sample, ]\r\n";
 			val += "test  <- data[-sample, ]\r\n";
+			val += "training <- train(unlist("+predictive.getColName()+") ~ ., data = train,na.action = na.omit)\r\n";
 		}
 
 		String metric ="";
@@ -178,7 +178,7 @@ public class RCompilateur implements Compilateur{
 		if (writeInFile) {
 			File myFile = new File("recall.csv");
 			FileOutputStream oFile = new FileOutputStream(myFile, true);
-			oFile.write((dataInput.getFilelocation() +";"+NameAlgo+";ScikitLearn;"+fin+";"+in.read()+"\n").getBytes());
+			oFile.write((dataInput.getFilelocation() +";"+NameAlgo+";R;"+fin+";"+in.read()+"\n").getBytes());
 			oFile.close();
 			}
 
