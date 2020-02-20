@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.io.FileUtils;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -19,15 +17,9 @@ import org.eclipse.xtext.testing.util.ParseHelper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.xtext.example.mydsl.mml.CSVParsingConfiguration;
-import org.xtext.example.mydsl.mml.DataInput;
-import org.xtext.example.mydsl.mml.MLAlgorithm;
-import org.xtext.example.mydsl.mml.MLChoiceAlgorithm;
 import org.xtext.example.mydsl.mml.MMLModel;
-import org.xtext.example.mydsl.mml.ValidationMetric;
 import org.xtext.example.mydsl.tests.MmlInjectorProvider;
 
-import com.google.common.io.Files;
 import com.google.inject.Inject;
 
 import junit.framework.Assert;
@@ -109,7 +101,15 @@ public class MmlParsingJavaTest {
 		compile.run();
 	}
 	
+	@Test
+	public void createFileR() throws IOException, Exception {
+		MMLModel result = parseHelper.parse(FileUtils.readFileToString(new File("src" + File.separator + "org" + 
+				File.separator + "xtext" + File.separator + "example" + File.separator + "mydsl" + File.separator + "tests" + 
+				File.separator + "groupMYST" + File.separator + "mml" + 2 + "-R.mml"), Charset.defaultCharset()));
 	
+		MainCompilateur compile = new MainCompilateur(result, "bigfoo.csv");
+		compile.run();
+	}
 	
 	private String mkValueInSingleQuote(String val) {
 		return "'" + val + "'";
