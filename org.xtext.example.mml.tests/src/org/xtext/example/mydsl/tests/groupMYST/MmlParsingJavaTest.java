@@ -44,7 +44,7 @@ public class MmlParsingJavaTest {
 		for(int i = 1; i<11; i++) {
 			MMLModel result = parseHelper.parse(FileUtils.readFileToString(new File("src" + File.separator + "org" + 
 					File.separator + "xtext" + File.separator + "example" + File.separator + "mydsl" + File.separator + "tests" + 
-					File.separator + "groupMYST" + File.separator + "mml" + i + ".mml"), Charset.defaultCharset()));
+					File.separator + "groupMYST" + File.separator + "mml" + i + ".mml")));//, Charset.defaultCharset()
 			Assertions.assertNotNull(result);
 			EList<Resource.Diagnostic> errors = result.eResource().getErrors();
 			//Assertions.assertTrue(errors.isEmpty(), "Unexpected errors");
@@ -99,17 +99,25 @@ public class MmlParsingJavaTest {
 	}
 
 	
+//	@Test
+//	public void createFileScikitLearn() throws IOException, Exception {
+//		MMLModel result = parseHelper.parse(FileUtils.readFileToString(new File("src" + File.separator + "org" + 
+//				File.separator + "xtext" + File.separator + "example" + File.separator + "mydsl" + File.separator + "tests" + 
+//				File.separator + "groupMYST" + File.separator + "mml2-Slearn.mml"), Charset.defaultCharset()));
+//	
+//		MainCompilateur compile = new MainCompilateur(result, "tst.csv");
+//		compile.run();
+//	}
+	
 	@Test
-	public void createFileScikitLearn() throws IOException, Exception {
+	public void createFileWeka() throws IOException, Exception {
 		MMLModel result = parseHelper.parse(FileUtils.readFileToString(new File("src" + File.separator + "org" + 
 				File.separator + "xtext" + File.separator + "example" + File.separator + "mydsl" + File.separator + "tests" + 
-				File.separator + "groupMYST" + File.separator + "mml" + 2 + "-Slearn.mml"), Charset.defaultCharset()));
+				File.separator + "groupMYST" + File.separator + "mml9-Weka.mml"), Charset.defaultCharset()));
 	
 		MainCompilateur compile = new MainCompilateur(result, "tst.csv");
 		compile.run();
-	}
-	
-	
+	}	
 	
 	private String mkValueInSingleQuote(String val) {
 		return "'" + val + "'";
