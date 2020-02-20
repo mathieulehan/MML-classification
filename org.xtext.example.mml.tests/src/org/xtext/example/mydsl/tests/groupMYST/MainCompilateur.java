@@ -66,7 +66,7 @@ public class MainCompilateur {
 		  case "R":
 		    compilateur = new RCompilateur();
 		    break;
-		  case "Weca":
+		  case "Weka":
 		     compilateur = new WekaCompilateur();
 		    break;
 		  case "xgboost":
@@ -85,19 +85,6 @@ public class MainCompilateur {
 		}
 	}
 	
-	
-	private void writeIntoFile(String dataName, String algo, String frameWork, String execTime,String metricName, String result) {
-		//TODO
-	}
-	
-	public File getFile() {
-		return this.fileResultat;
-	}
-	
-	private String getNameData() {
-		//TODO : must give the name of the dataSet
-		return "";
-	}
 
 	private String getCSVSeparator() {
 		if(parsingInstruction.getSep() == null) {

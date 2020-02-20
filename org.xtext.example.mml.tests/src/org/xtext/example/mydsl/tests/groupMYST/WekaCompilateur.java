@@ -91,7 +91,7 @@ public class WekaCompilateur implements Compilateur {
 	}else if (validation.getStratification() instanceof TrainingTest) {
 	   
 	}
-	
+	boolean writeInFile = false;
 	for (ValidationMetric laMetric : metrics) {
 	switch(laMetric.getLiteral()) {
 	  case "balanced_accuracy":
@@ -99,6 +99,7 @@ public class WekaCompilateur implements Compilateur {
 	    break;
 	  case "recall":
 		  eval.recall(0);
+		  writeInFile = true;
 	    break;
 	  case "precision":
 		  eval.precision(0);
@@ -140,7 +141,7 @@ public class WekaCompilateur implements Compilateur {
 	}
 	System.out.println(eval.toSummaryString("\nResults\n======\n", false));
 		
-//	Long date = new Date().getTime();
+//Long date = new Date().getTime();
 //	Files.write(pandasCode.getBytes(), new File("mml_Weka_"+date+".py"));
 
 //	Process p = Runtime.getRuntime().exec("python mml"+date+".py");
@@ -149,7 +150,7 @@ public class WekaCompilateur implements Compilateur {
 	if (writeInFile) {
 		File myFile = new File("recall.csv");
 		FileOutputStream oFile = new FileOutputStream(myFile, true);
-		oFile.write((dataInput.getFilelocation() +";"+NameAlgo+";ScikitLearn;"+fin+";"+in.read()+"\n").getBytes());
+		//oFile.write((dataInput.getFilelocation() +";"+NameAlgo+";Weka"+ ";"+fin+";"+in.read()+"\n").getBytes());
 		oFile.close();
 		}
 	}
