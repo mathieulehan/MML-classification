@@ -96,7 +96,7 @@ public class ScikitLearnCompilateur implements Compilateur {
 		}else if(algo instanceof DT) {
 			 DT dt = (DT)algo;
 				int max_depth = dt.getMax_depth();
-			pythonImport += " from sklearn.tree import DecisionTreeClassifier"+"\r\n";
+			pythonImport += "from sklearn.tree import DecisionTreeClassifier"+"\r\n";
 			NameAlgo = "Decision Tree";
 			if(max_depth != 0) {
 				algostr = "algo = DecisionTreeClassifier(max_depth="+max_depth+")"+"\r\n";
