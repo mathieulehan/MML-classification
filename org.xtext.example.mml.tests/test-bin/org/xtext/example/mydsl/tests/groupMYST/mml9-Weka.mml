@@ -1,5 +1,5 @@
-datainput "foo.csv" separator ,
+datainput "bigfoo.csv" separator ,
 mlframework Weka
-algorithm LogisticRegression
-CrossValidation { numRepetitionCross 10 }
+algorithm DT
+CrossValidation { numRepetitionCross 2 }
 recall

@@ -13,6 +13,7 @@ import weka.core.converters.CSVLoader;
 import weka.gui.beans.DataSource;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
+import weka.classifiers.functions.Logistic;
 import weka.classifiers.trees.J48;
 import weka.classifiers.trees.RandomForest;
 import org.xtext.example.mydsl.mml.CrossValidation;
@@ -43,22 +44,19 @@ public class WekaCompilateur implements Compilateur {
 	
 	CSVLoader loader = new CSVLoader();
 	loader.setSource(new File(dataInput.getFilelocation()));
+	loader.setNominalAttributes("first-last");
 	Instances data = loader.getDataSet();
-	
-	String predictivestr = "";
-	if (predictive != null ) {
-		predictivestr = ""+"\r\n";
-	}else {
-		//dernière colonne predictive.getColumn()
-		predictivestr = ""+"\r\n";
-	}
-	//TODO
-	String predictorstr ="";
-	
+		
 	int trainSize = (int) Math.round(data.numInstances() * 0.8);
 	int testSize = data.numInstances() - trainSize;
-	Instances train = new Instances(data, trainSize);
-	Instances test = new Instances(data, testSize);
+	Instances train = new Instances(loader.getDataSet(), trainSize);
+	Instances test = new Instances(loader.getDataSet(), testSize);
+	
+	if (data.classIndex() == -1) {
+        train.setClassIndex(data.numAttributes() - 1);
+        test.setClassIndex(data.numAttributes() - 1);
+        data.setClassIndex(data.numAttributes() - 1);
+    }
 	
 	Classifier classifier = null;
 	
@@ -69,9 +67,9 @@ public class WekaCompilateur implements Compilateur {
 	}else if(algo instanceof org.xtext.example.mydsl.mml.RandomForest ) {
 		classifier = new RandomForest();
 	}else if(algo instanceof LogisticRegression) {
-		classifier = new weka.classifiers.functions.Logistic();
+		classifier = new Logistic();
 	}
-	
+		
 	Evaluation eval = null;
 	try {
 		eval = new Evaluation(train);
@@ -80,7 +78,7 @@ public class WekaCompilateur implements Compilateur {
 		e1.printStackTrace();
 	}
 	int num = validation.getStratification().getNumber();
-
+		
 	if (validation.getStratification() instanceof CrossValidation) {
 		try {
 			eval.crossValidateModel(classifier, data, num, new Random(1));
