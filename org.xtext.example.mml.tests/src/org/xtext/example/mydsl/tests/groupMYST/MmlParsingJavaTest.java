@@ -91,39 +91,45 @@ public class MmlParsingJavaTest {
 	}
 
 	
-//	@Test
-//	public void createFileScikitLearn() throws IOException, Exception {
-//		MMLModel result = parseHelper.parse(FileUtils.readFileToString(new File("src" + File.separator + "org" + 
-//				File.separator + "xtext" + File.separator + "example" + File.separator + "mydsl" + File.separator + "tests" + 
-//				File.separator + "groupMYST" + File.separator + "mml2-Slearn.mml"), Charset.defaultCharset()));
-//	
-//		MainCompilateur compile = new MainCompilateur(result, "tst.csv");
-//		compile.run();
-//	}
-	
 	@Test
-	public void createFileWeka() throws IOException, Exception {
-		MMLModel result = parseHelper.parse(FileUtils.readFileToString(new File("src" + File.separator + "org" + 
+	public void createFileScikitLearn() throws IOException, Exception {
+	MMLModel result = parseHelper.parse(FileUtils.readFileToString(new File("src" + File.separator + "org" + 
 				File.separator + "xtext" + File.separator + "example" + File.separator + "mydsl" + File.separator + "tests" + 
-				File.separator + "groupMYST" + File.separator + "mml9-Weka.mml"), Charset.defaultCharset()));
+				File.separator + "groupMYST" + File.separator + "mml10-Slearn.mml"), Charset.defaultCharset()));
 	
 		MainCompilateur compile = new MainCompilateur(result, "tst.csv");
-		compile.run();
-<<<<<<< HEAD
-	}	
-=======
+	compile.run();
 	}
 	
-	@Test
-	public void createFileR() throws IOException, Exception {
-		MMLModel result = parseHelper.parse(FileUtils.readFileToString(new File("src" + File.separator + "org" + 
-				File.separator + "xtext" + File.separator + "example" + File.separator + "mydsl" + File.separator + "tests" + 
-				File.separator + "groupMYST" + File.separator + "mml" + 2 + "-R.mml"), Charset.defaultCharset()));
 	
-		MainCompilateur compile = new MainCompilateur(result, "bigfoo.csv");
-		compile.run();
-	}
->>>>>>> branch 'master' of https://github.com/mathieulehan/MML-classification.git
+	
+	/*
+	 * @Test public void createFileWeka() throws IOException, Exception { MMLModel
+	 * result = parseHelper.parse(FileUtils.readFileToString(new File("src" +
+	 * File.separator + "org" + File.separator + "xtext" + File.separator +
+	 * "example" + File.separator + "mydsl" + File.separator + "tests" +
+	 * File.separator + "groupMYST" + File.separator + "mml9-Weka.mml"),
+	 * Charset.defaultCharset()));
+	 * 
+	 * MainCompilateur compile = new MainCompilateur(result, "tst.csv");
+	 * compile.run();
+	 * 
+	 * }
+	 */
+	 
+	 
+	
+	/*
+	 * @Test public void createFileR() throws IOException, Exception { MMLModel
+	 * result = parseHelper.parse(FileUtils.readFileToString(new File("src" +
+	 * File.separator + "org" + File.separator + "xtext" + File.separator +
+	 * "example" + File.separator + "mydsl" + File.separator + "tests" +
+	 * File.separator + "groupMYST" + File.separator + "mml" + 2 + "-R.mml"),
+	 * Charset.defaultCharset()));
+	 * 
+	 * MainCompilateur compile = new MainCompilateur(result, "bigfoo.csv");
+	 * compile.run(); }
+	 */
 	
 	private String mkValueInSingleQuote(String val) {
 		return "'" + val + "'";

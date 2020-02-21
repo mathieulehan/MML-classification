@@ -66,29 +66,32 @@ public class ScikitLearnCompilateur implements Compilateur {
 			if(svm.isClassificationSpecified()) {
 				SVMClassification classification = svm.getSvmclassification();
 				NameAlgo = classification.getLiteral();
-				switch(classification.getLiteral()) {
+				switch(NameAlgo) {
 					case "C-classification":
-						pythonImport +="from sklearn.svm import SVC";
+						pythonImport +="from sklearn.svm import SVC"+"\r\n";
 						if(svm.isKernelSpecified()) {
-						algostr = "algo = SVC(C="+c+", kernel="+mkValueInSingleQuote(svm.getKernel().getName())+",gamma="+mkValueInSingleQuote(gamma)+")";
+						algostr = "algo = SVC(C="+c+", kernel="+mkValueInSingleQuote(svm.getKernel().getName())+",gamma="+mkValueInSingleQuote(gamma)+")"+"\r\n";
 						}else {
-							algostr = "algo = SVC(C="+c+",gamma="+gamma+")";
+							algostr = "algo = SVC(C="+c+",gamma="+gamma+")"+"\r\n";
 						}
-						case "nu-classification":
-						pythonImport +="from sklearn.svm import NuSVC";
+						break;
+					case "nu-classification":
+						pythonImport +="from sklearn.svm import NuSVC"+"\r\n";
 						if(svm.isKernelSpecified()) {
-						algostr = "algo = NuSVC(kernel="+mkValueInSingleQuote(svm.getKernel().getName())+",gamma="+mkValueInSingleQuote(gamma)+")";
+						algostr = "algo = NuSVC(kernel="+mkValueInSingleQuote(svm.getKernel().getName())+",gamma="+mkValueInSingleQuote(gamma)+")"+"\r\n";
 						}else {
-							algostr = "algo = NuSVC(gamma="+mkValueInSingleQuote(gamma)+")";
+							algostr = "algo = NuSVC(gamma="+gamma+")"+"\r\n";
 						}
+						break;
 					case "one-classification":
-						pythonImport +="from sklearn.svm import OneClassSVM";
+						pythonImport +="from sklearn.svm import OneClassSVM"+"\r\n";
 						if(svm.isKernelSpecified()) {
-						algostr = "algo = OneClassSVM(kernel="+ mkValueInSingleQuote(svm.getKernel().getName())+",gamma="+mkValueInSingleQuote(gamma)+")";
+						algostr = "algo = OneClassSVM(kernel="+ mkValueInSingleQuote(svm.getKernel().getName())+",gamma="+mkValueInSingleQuote(gamma)+")"+"\r\n";
 						}else {
-							algostr = "algo = OneClassSVM(gamma="+mkValueInSingleQuote(gamma)+")";
+							algostr = "algo = OneClassSVM(gamma="+gamma+")"+"\r\n";
 							
 						}
+						break;
 						}
 			}
 			
@@ -104,30 +107,30 @@ public class ScikitLearnCompilateur implements Compilateur {
 				algostr = "algo = DecisionTreeClassifier()"+"\r\n";
 			}
 		}else if(algo instanceof RandomForest ) {
-			pythonImport += "from sklearn.ensemble import RandomForestClassifier";
+			pythonImport += "from sklearn.ensemble import RandomForestClassifier"+"\r\n";
 			algostr = "algo = RandomForestClassifier()\r\n" ;
 			NameAlgo = "Random Forest";
 		}else if(algo instanceof LogisticRegression) {
-			pythonImport += "from sklearn.linear_model import LogisticRegression";
+			pythonImport += "from sklearn.linear_model import LogisticRegression"+"\r\n";
 			algostr = "algo = LogisticRegression() "+"\r\n";
 			NameAlgo = "Logistic Regression";
 		}
 		
 		String val = "";
-		int num;
+		double num;
 		if (validation.getStratification() instanceof CrossValidation) {
 		 
 				 pythonImport += "from sklearn.model_selection import cross_val_predict"+"\r\n";
 				 num = validation.getStratification().getNumber();
-			  val = "y_pred = cross_val_predict(algo, X, Y, cv="+num+")"+"\r\n";
+			  val = "y_pred = cross_val_predict(algo, X, Y, cv="+(int) num+")"+"\r\n";
 		}else if (validation.getStratification() instanceof TrainingTest) {
 			  pythonImport += "from sklearn.model_selection import train_test_split"+"\r\n";
-			  num = validation.getStratification().getNumber();
+			  num = (validation.getStratification().getNumber())*0.01;
 			  val = "test_size =" +num+"\r\n" + 
 			  		"X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=test_size)"+"\r\n";
-			  val +="algo.fit(X_train, y_train)"+"\r\n";
-			  val += " y_pred = clf.predict(X_test)"+"\r\n";
-			  val += " Y = y_test"+"\r\n";
+			  val +="algo.fit(X_train,Y_train)"+"\r\n";
+			  val += "y_pred = algo.predict(X_test)"+"\r\n";
+			  val += "Y = Y_test"+"\r\n";
 
 		}
 		
@@ -190,13 +193,14 @@ public class ScikitLearnCompilateur implements Compilateur {
 		Files.write(pandasCode.getBytes(), new File("mml_ScikitLearn_"+date+".py"));
 
 		long debut = System.currentTimeMillis();
-		Process p = Runtime.getRuntime().exec("python mml_ScikitLearn_"+date+".py");
+		Process p = Runtime.getRuntime().exec("C:\\Program Files (x86)\\Python38-32\\python.exe mml_ScikitLearn_"+date+".py");
 		long fin = System.currentTimeMillis()-debut;
 		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 		String line; 
-	
+	String recall ="";
 		while ((line = in.readLine()) != null) {
-			System.out.println(line);
+			recall = line;
+			System.out.println(recall);
 		}
 		BufferedReader inError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 		
@@ -210,7 +214,7 @@ public class ScikitLearnCompilateur implements Compilateur {
 		if (writeInFile) {
 		File myFile = new File("recall.csv");
 		FileOutputStream oFile = new FileOutputStream(myFile, true);
-		oFile.write((dataInput.getFilelocation() +";"+NameAlgo+";ScikitLearn;"+fin+";"+in.read()+"\n").getBytes());
+		oFile.write((dataInput.getFilelocation() +";"+NameAlgo+";ScikitLearn;"+fin+";"+recall+"\n").getBytes());
 		oFile.close();
 		}
 
