@@ -62,6 +62,12 @@ public class ScikitLearnCompilateur implements Compilateur {
 			String c = svm.getC();
 			String gamma = svm.getGamma();
 
+			if(c == null) {
+				c = "1.0";
+			}
+			if (gamma== null) {
+				gamma = mkValueInSingleQuote("scale");
+			}
 			
 			if(svm.isClassificationSpecified()) {
 				SVMClassification classification = svm.getSvmclassification();

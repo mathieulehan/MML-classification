@@ -96,7 +96,7 @@ public class MmlParsingJavaTest {
 	public void createFileScikitLearn() throws IOException, Exception {
 	MMLModel result = parseHelper.parse(FileUtils.readFileToString(new File("src" + File.separator + "org" + 
 				File.separator + "xtext" + File.separator + "example" + File.separator + "mydsl" + File.separator + "tests" + 
-				File.separator + "groupMYST" + File.separator + "recallALL.mml"), Charset.defaultCharset()));
+				File.separator + "groupMYST" + File.separator + "recallScikitLearn.mml"), Charset.defaultCharset()));
 	
 		MainCompilateur compile = new MainCompilateur(result, "tst.csv");
 	compile.run();
