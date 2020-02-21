@@ -75,20 +75,17 @@ public class RCompilateur implements Compilateur{
 				}
 			}
 		}else if(algo instanceof DT) {
-			algostr += "n <- nrow(data)\r\n";
-			algostr += "n_train <- round(0.8 * n)\r\n";
 			algostr += "set.seed(123)\r\n";
-			algostr += "train_indices <- sample(1:n, n_train)\r\n";
-			algostr += "algo <- rpart(unlist(Y)~., data = data, method = \"class\")\r\n";
+			algostr += "sample <- createDataPartition(data$"+ predictive.getColName() +", p=.8, list=FALSE, times=1)\r\n";
+			algostr += "train <- data[sample, ]";
+			algostr += "test  <- data[-sample, ]\r\n";
+			algostr += "algo <- rpart(formula = " + predictive.getColName() +" ~ ., data = train, method = \"class\")\r\n";
 			NameAlgo = "Decision Tree";
 		}else if(algo instanceof RandomForest ) {
-			algostr += "install.packages(\"randomForest\")\r\n";
-			algostr += "install.packages(\"dplyr\")\r\n";
-			algostr += "library(dplyr)\r\n";
-			algostr += "data4 <- select(data3, Survived, Name, Sex, Age, Ticket, Cabin, Embarked)\r\n";
-			algostr += "library(randomForest)\r\n";
 			algostr += "set.seed(123)\r\n";
-			algostr += "algo <- randomForest(Y ~ X, data = data)";
+			algostr += "install.packages(\"randomForest\")\r\n";
+			algostr += "library(randomForest)\r\n";
+			algostr += "algo <- randomForest(" + predictive.getColName() +" ~ ., train, importance=TRUE, proximity=TRUE)";
 			NameAlgo = "Random Forest";
 		}else if(algo instanceof LogisticRegression) {
 			algostr += "glm.fit <- gml(Y ~ X, data = data, family = binomial)";
