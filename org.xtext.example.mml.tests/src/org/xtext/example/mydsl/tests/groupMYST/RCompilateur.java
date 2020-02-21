@@ -55,40 +55,42 @@ public class RCompilateur implements Compilateur{
 
 		String NameAlgo ="";
 		String algostr ="";
+		String trainingModel = "";
 		if(algo instanceof SVM) {
 			SVM svm = (SVM)algo;
 			NameAlgo = "SVM";
+			String kernel = svm.getKernel().getName();
+			String cost = svm.getC();
+			svm.getGamma();
+			
 			if (svm.isClassificationSpecified()) {
 				algostr += "install.packages(\"e1071\")\r\n";
 				algostr += "library(e1071)\r\n";
 				SVMClassification classification = svm.getSvmclassification();
-				switch (classification.getName()) {
+				switch (classification.getLiteral()) {
 				case "C-classification":
-					algostr += "algo <- svm(Y ~ X, data = data, kernel = \"linear\", cost = 10, scale = FALSE, type =\"C-classification\")";
+					algostr += "algo <- svm(Y ~ X, data = data, kernel = \""+ kernel +"\", cost = "+ cost +", scale = FALSE, type =\"C-classification\")";
 					break;
 				case "nu-classification":
-					algostr += "algo2 <- svm(Y ~ X, data = data, kernel = \"linear\", cost = 10, scale = FALSE, type =\"nu-classification\")";
-					break;
+					algostr += "algo <- svm(Y ~ X, data = data, kernel = \""+ kernel +"\", cost = "+ cost +", scale = FALSE, type =\"nu-classification\")";
+					break;	
 				case "one-classification":
-					algostr += "algo3 <- svm(Y ~ X, data = data, kernel = \"linear\", cost = 10, scale = FALSE, type =\"one-classification\")";
+					algostr += "algo <- svm(Y ~ X, data = data, kernel = \""+ kernel +"\", cost = "+ cost +", scale = FALSE, type =\"one-classification\")";
 					break;
 				}
 			}
 		}else if(algo instanceof DT) {
-			algostr += "set.seed(123)\r\n";
-			algostr += "sample <- createDataPartition(data$"+ predictive.getColName() +", p=.8, list=FALSE, times=1)\r\n";
-			algostr += "train <- data[sample, ]";
-			algostr += "test  <- data[-sample, ]\r\n";
-			algostr += "algo <- rpart(formula = " + predictive.getColName() +" ~ ., data = train, method = \"class\")\r\n";
+			trainingModel += "rpart";
 			NameAlgo = "Decision Tree";
 		}else if(algo instanceof RandomForest ) {
-			algostr += "set.seed(123)\r\n";
 			algostr += "install.packages(\"randomForest\")\r\n";
 			algostr += "library(randomForest)\r\n";
-			algostr += "algo <- randomForest(" + predictive.getColName() +" ~ ., train, importance=TRUE, proximity=TRUE)";
+			trainingModel += "rf";
 			NameAlgo = "Random Forest";
 		}else if(algo instanceof LogisticRegression) {
-			algostr += "glm.fit <- gml(Y ~ X, data = data, family = binomial)";
+			algostr += "install.packages(\"caTools\")\r\n";
+			algostr += "library(caTools)\r\n";
+			trainingModel += "LogitBoost";
 			NameAlgo = "Logistic Regression";
 		}
 
@@ -96,14 +98,18 @@ public class RCompilateur implements Compilateur{
 		int num;
 		String val = "";
 		if (validation.getStratification() instanceof CrossValidation) {
+			algostr += "set.seed(123)\r\n";
+			algostr += "sample <- createDataPartition(data$"+ predictive.getColName() +", p=.8, list=FALSE, times=1)\r\n";
+			algostr += "train <- data[sample, ]\r\n";
+			algostr += "test  <- data[-sample, ]\r\n";
 			num = validation.getStratification().getNumber();
-			val += "train_control <- trainControl(method=\"cv\", number="+num+")\r\n";
-			val += "scores <- train(data=data, trControl=train_control, method=\"nb\"\r\n)";
+			algostr += "train_control <- trainControl(method=\"cv\", number="+num+")\r\n";
+			val += "scores <- train("+predictive.getColName()+" ~ ., data=train, trControl=train_control, method=\""+trainingModel+"\"\r\n)";
 		}else if(validation.getStratification() instanceof TrainingTest) {
 			num = validation.getStratification().getNumber();
-			val += "sample <- sample.int(n = nrow(data), size = floor(.80*nrow(data)), replace = F)\r\n";
-			val += "train <- data[sample, ]\r\n";
-			val += "test  <- data[-sample, ]\r\n";
+			algostr += "sample <- createDataPartition(data$"+ predictive.getColName() +", p=.8, list=FALSE, times=1)\r\n";
+			algostr += "train <- data[sample, ]\r\n";
+			algostr += "test  <- data[-sample, ]\r\n";
 			val += "training <- train(unlist("+predictive.getColName()+") ~ ., data = train,na.action = na.omit)\r\n";
 		}
 
@@ -111,7 +117,7 @@ public class RCompilateur implements Compilateur{
 		String affiche  ="";
 		boolean writeInFile = false;
 		for (ValidationMetric laMetric : metrics) {
-			algostr += "cm <- confusionMatrix(data, train(data))\r\n";
+			algostr += "cm <- confusionMatrix(test, training)\r\n";
 			switch(laMetric.getLiteral()) {
 			case "balanced_accuracy":
 				//TODO
