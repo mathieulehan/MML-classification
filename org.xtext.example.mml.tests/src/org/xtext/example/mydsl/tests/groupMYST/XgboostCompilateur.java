@@ -34,22 +34,20 @@ public class XgboostCompilateur implements Compilateur{
 	private List<ValidationMetric> metrics;
 	
 	public void execute()throws IOException {
-		String boostImport = "import xgboost as xgb"+"\r\n"; 
-		boostImport += "import pandas as pd"+"\r\n"; 
+		String boostImport = "import xgboost as xgb\r\n"; 
+		boostImport += "import pandas as pd\r\n"; 
 		String csvReading = "mml_data = pd.read_csv(" + mkValueInSingleQuote(dataInput.getFilelocation()) + ", sep=" + 
-				mkValueInSingleQuote(separator) + ")"+"\r\n";	
+				mkValueInSingleQuote(separator) + ")\r\n";	
 		
 		String predictivestr = "";
-		if (predictive.getColName() != null && predictive.getColName()!= "") {
-			if (predictive.getColName() != null && predictive.getColName()!= "") {
-				predictivestr = "X = mml_data.drop(columns=[\""+predictive.getColName()+"\"])"+"\r\n";
-			}else {
-				//dernière colonne predictive.getColumn()
-				predictivestr = "X = mml_data.drop(mml_data.columns[len(mml_data.columns)-1])"+"\r\n";
-			}
+		if (predictive != null) {
+			predictivestr = "X = mml_data.drop(columns=[\""+predictive.getColName()+"\"])"+"\r\n";
+		}else {
+			//dernière colonne predictive.getColumn()
+			predictivestr = "X = mml_data.drop(columns=mml_data.columns[len(mml_data.columns)-1])\r\n";
 		}
-		
-		String predictorstr ="";
+
+		String predictorstr ="Y = mml_data[mml_data.columns[len(mml_data.columns)-1]]\r\n";
 		
 		String NameAlgo ="";		
 		String algostr ="";
@@ -64,9 +62,9 @@ public class XgboostCompilateur implements Compilateur{
 				int max_depth = dt.getMax_depth();
 				 
 				if(max_depth != 0) {
-					 algostr = "algo = "+"\r\n";
+					 algostr = "algo = \r\n";
 				}else {
-					 algostr = "algo = "+"\r\n";
+					 algostr = "algo = \r\n";
 				}
 		}else if(algo instanceof RandomForest ) {
 			  //TODO
