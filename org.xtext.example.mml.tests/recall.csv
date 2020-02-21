@@ -59,3 +59,5 @@ foo2.csv;Decision Tree;ScikitLearn;169;-1
 foo2.csv;Decision Tree;ScikitLearn;236;-1
 foo2.csv;Decision Tree;ScikitLearn;232;-1
 >>>>>>> 8210a2d362de0987ad3c6af0876597936e313e84
+bigfoo.csv;Decision Tree;ScikitLearn;10;1.0
+bigfoo.csv;Decision Tree;ScikitLearn;8;1.0
