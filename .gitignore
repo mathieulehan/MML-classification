@@ -28,6 +28,7 @@ gen
 *.zip
 *.tar.gz
 *.rar
+.classpath
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
@@ -271,3 +272,4 @@ org.xtext.example.mml.ui.tests/src/
 org.xtext.example.mml.ui.tests/xtend-gen/
 org.xtext.example.mml.ui/org.xtext.example.mml.ui.iml
 org.xtext.example.mml/org.xtext.example.mml.iml
+.Rproj.user

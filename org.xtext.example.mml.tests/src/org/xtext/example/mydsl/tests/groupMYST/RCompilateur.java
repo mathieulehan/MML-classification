@@ -3,6 +3,7 @@ package org.xtext.example.mydsl.tests.groupMYST;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Date;
@@ -38,6 +39,7 @@ public class RCompilateur implements Compilateur{
 
 	public void execute() throws IOException {
 		String rImport = "install.packages(\"rpart\")\r\n";
+		String columnToPredictName = "";
 		rImport += "install.packages(\"caret\")\r\n";
 		rImport += "library(rpart)\r\n";
 		rImport += "library(caret)\r\n";
@@ -48,10 +50,17 @@ public class RCompilateur implements Compilateur{
 			predictivestr = "X <- data$"+predictive.getColName()+" <- NULL"+"\r\n";
 		}else {
 			//dernière colonne predictive.getColumn()
-			predictivestr = "X <- data[ncol(data)-1] <- NULL"+"\r\n";
+			predictivestr = "X <- data - data[ncol(data)-1]"+"\r\n";
 		}
 
-		String predictorstr ="Y <- data[ncol(data)-1]\r\n";
+        BufferedReader br = new BufferedReader(new FileReader(dataInput.getFilelocation()));
+        String header = br.readLine();
+        if (header != null) {
+            String[] columns = header.split(separator);
+            columnToPredictName = columns[columns.length-1].trim();
+        }
+		
+		String predictorstr ="Y <- data$" + columnToPredictName + "\r\n";
 
 		String NameAlgo ="";
 		String algostr ="";
@@ -99,25 +108,29 @@ public class RCompilateur implements Compilateur{
 		String val = "";
 		if (validation.getStratification() instanceof CrossValidation) {
 			algostr += "set.seed(123)\r\n";
-			algostr += "sample <- createDataPartition(data$"+ predictive.getColName() +", p=.8, list=FALSE, times=1)\r\n";
+			algostr += "sample <- createDataPartition(data$variety, p = .8, list = FALSE)\r\n";
 			algostr += "train <- data[sample, ]\r\n";
 			algostr += "test  <- data[-sample, ]\r\n";
 			num = validation.getStratification().getNumber();
 			algostr += "train_control <- trainControl(method=\"cv\", number="+num+")\r\n";
-			val += "scores <- train("+predictive.getColName()+" ~ ., data=train, trControl=train_control, method=\""+trainingModel+"\"\r\n)";
+			algostr += "model <- train(" + columnToPredictName + "~ ., data=train, trControl=train_control, method=\""+trainingModel+"\"\r\n)";
+			algostr += "x_test <- test[,1:ncol(test)-1]\r\n";
+			algostr += "y_test <-test[,ncol(test)]\r\n";
+			algostr += "predictions <- predict(model, x_test)\r\n";
 		}else if(validation.getStratification() instanceof TrainingTest) {
-			num = validation.getStratification().getNumber();
-			algostr += "sample <- createDataPartition(data$"+ predictive.getColName() +", p=.8, list=FALSE, times=1)\r\n";
+			/*num = validation.getStratification().getNumber();
+			algostr += "set.seed(123)\r\n";
+			algostr += "sample <- createDataPartition(data$variety, p = .8, list = FALSE)\r\n";
 			algostr += "train <- data[sample, ]\r\n";
 			algostr += "test  <- data[-sample, ]\r\n";
-			val += "training <- train(unlist("+predictive.getColName()+") ~ ., data = train,na.action = na.omit)\r\n";
+			algostr += "training <- train(unlist(data$"+ columnToPredictName +") ~ ., data = train,na.action = na.omit)\r\n";*/
 		}
 
 		String metric ="";
 		String affiche  ="";
 		boolean writeInFile = false;
 		for (ValidationMetric laMetric : metrics) {
-			algostr += "cm <- confusionMatrix(test, training)\r\n";
+			algostr += "cm <- confusionMatrix(predcictions, y_test, mode=\"prec_recall\")\r\n";
 			switch(laMetric.getLiteral()) {
 			case "balanced_accuracy":
 				//TODO
