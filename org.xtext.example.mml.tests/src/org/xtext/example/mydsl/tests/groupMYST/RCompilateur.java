@@ -76,24 +76,24 @@ public class RCompilateur implements Compilateur{
 				algostr += "install.packages(\"e1071\")\r\n";
 				algostr += "library(e1071)\r\n";
 				SVMClassification classification = svm.getSvmclassification();
+				algostr += "x_test <- subset(data, select=-"+columnToPredictName+")";
+				algostr += "y_test <- "+columnToPredictName+"";
 				switch (classification.getLiteral()) {
-				algostr += "X <- subset(data, select=-"+columnToPredictName+")";
-				algostr += "Y <- "+columnToPredictName+"";
 				case "C-classification":
-					algostr += "svm_model <- svm(Y ~ ., data = X, kernel = \""+ kernel +"\", cost = "+ cost +", scale = FALSE, type =\"C-classification\")";
-					algostr += "predictions <- predict(svm_model, X)";
-					algostr += "tale(predictions, Y)";
+					algostr += "svm_model <- svm(y_test ~ ., data = x_test, kernel = \""+ kernel +"\", cost = "+ cost +", scale = FALSE, type =\"C-classification\")\r\n";
+					algostr += "predictions <- predict(svm_model, x_test)\r\n";
+					algostr += "table(predictions, y_test)\r\n";
 					break;
 				case "nu-classification":
-					algostr += "svm_model <- svm(Y ~ ., data = X, kernel = \""+ kernel +"\", cost = "+ cost +", scale = FALSE, type =\"nu-classification\")";
-					algostr += "predictions <- predict(svm_model, X)";
-					algostr += "tale(predictions, Y)";
+					algostr += "svm_model <- svm(y_test ~ ., data = x_test, kernel = \""+ kernel +"\", cost = "+ cost +", scale = FALSE, type =\"nu-classification\")\r\n";
+					algostr += "predictions <- predict(svm_model, x_test)\r\n";
+					algostr += "table(predictions, y_test)\r\n";
 					break;	
 				case "one-classification":
 					//TODO : impossible d'afficher des stats avec confusionMatrix pour ce svm
-					algostr += "svm_model <- svm(Y ~ ., data = X, kernel = \""+ kernel +"\", cost = "+ cost +", scale = FALSE, type =\"one-classification\")";
-					algostr += "predictions <- predict(svm_model, X)";
-					algostr += "tale(predictions, Y)";
+					algostr += "svm_model <- svm(y_test ~ ., data = x_test, kernel = \""+ kernel +"\", cost = "+ cost +", scale = FALSE, type =\"one-classification\")\r\n";
+					algostr += "predictions <- predict(svm_model, x_test)\r\n";
+					algostr += "table(predictions, y_test)\r\n";
 					break;
 				}
 			}
@@ -122,7 +122,7 @@ public class RCompilateur implements Compilateur{
 			algostr += "test  <- data[-sample, ]\r\n";
 			num = validation.getStratification().getNumber();
 			algostr += "train_control <- trainControl(method=\"cv\", number="+num+")\r\n";
-			algostr += "model <- train(" + columnToPredictName + "~ ., data=train, trControl=train_control, method=\""+trainingModel+"\"\r\n)";
+			algostr += "model <- train(" + columnToPredictName + "~ ., data=train, trControl=train_control, method=\""+trainingModel+"\")\r\n";
 			algostr += "x_test <- test[,1:ncol(test)-1]\r\n";
 			algostr += "y_test <-test[,ncol(test)]\r\n";
 			algostr += "predictions <- predict(model, x_test)\r\n";
