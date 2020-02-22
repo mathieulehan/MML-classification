@@ -46,11 +46,11 @@ public class WekaCompilateur implements Compilateur {
 	loader.setSource(new File(dataInput.getFilelocation()));
 	loader.setNominalAttributes("first-last");
 	Instances data = loader.getDataSet();
-		
+
 	int trainSize = (int) Math.round(data.numInstances() * 0.8);
 	int testSize = data.numInstances() - trainSize;
-	Instances train = new Instances(loader.getDataSet(), trainSize);
-	Instances test = new Instances(loader.getDataSet(), testSize);
+	Instances train = new Instances(data, trainSize);
+	Instances test = new Instances(data, testSize);
 	
 	if (data.classIndex() == -1) {
         train.setClassIndex(data.numAttributes() - 1);
@@ -96,7 +96,9 @@ public class WekaCompilateur implements Compilateur {
 		  
 	    break;
 	  case "recall":
-		  eval.recall(0);
+		  for(int i = 0; i<data.numAttributes();i++) {
+			  eval.recall(i);
+		  }
 		  writeInFile = true;
 	    break;
 	  case "precision":
@@ -138,7 +140,7 @@ public class WekaCompilateur implements Compilateur {
 		e.printStackTrace();
 	}
 	System.out.println(eval.toSummaryString("\nResults\n======\n", false));
-		
+	System.out.println(classifier);
 //Long date = new Date().getTime();
 //	Files.write(pandasCode.getBytes(), new File("mml_Weka_"+date+".py"));
 
