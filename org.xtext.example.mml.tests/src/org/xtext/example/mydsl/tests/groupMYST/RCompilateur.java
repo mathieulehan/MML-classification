@@ -43,7 +43,7 @@ public class RCompilateur implements Compilateur{
 		rImport += "install.packages(\"caret\")\r\n";
 		rImport += "library(rpart)\r\n";
 		rImport += "library(caret)\r\n";
-		String csvReading = "data <- read.csv(\""+dataInput.getFilelocation()+"\", header = TRUE, sep = \""+separator+"\")\r\n";
+		String csvReading = "data <- read.csv(\""+dataInput.getFilelocation()+"\", header = TRUE, sep = \""+separator+"\")\r\nattach(data)\r\n";
 
         BufferedReader br = new BufferedReader(new FileReader(dataInput.getFilelocation()));
         String header = br.readLine();
@@ -57,10 +57,12 @@ public class RCompilateur implements Compilateur{
 			predictivestr = "X <- data$"+predictive.getColName()+"\r\n";
 		}else {
 			//dernière colonne predictive.getColumn()
-			predictivestr = "X <- subset(data, select=-" + columnToPredictName + ""+"\r\n";
+			predictivestr = "X <- subset(data, select=-" + columnToPredictName + ")\r\n";
+			predictivestr = predictivestr.replace("\"", "");
 		}
 		
 		String predictorstr ="Y <- " + columnToPredictName + "\r\n";
+		predictorstr = predictorstr.replace("\"", "");
 
 		String NameAlgo ="";
 		String algostr ="";
@@ -70,30 +72,28 @@ public class RCompilateur implements Compilateur{
 			NameAlgo = "SVM";
 			String kernel = svm.getKernel().getName();
 			String cost = svm.getC();
-			svm.getGamma();
-			
+			String gamma = svm.getGamma();
+
 			if (svm.isClassificationSpecified()) {
 				algostr += "install.packages(\"e1071\")\r\n";
 				algostr += "library(e1071)\r\n";
 				SVMClassification classification = svm.getSvmclassification();
-				algostr += "x_test <- subset(data, select=-"+columnToPredictName+")";
-				algostr += "y_test <- "+columnToPredictName+"";
 				switch (classification.getLiteral()) {
 				case "C-classification":
-					algostr += "svm_model <- svm(y_test ~ ., data = x_test, kernel = \""+ kernel +"\", cost = "+ cost +", scale = FALSE, type =\"C-classification\")\r\n";
-					algostr += "predictions <- predict(svm_model, x_test)\r\n";
-					algostr += "table(predictions, y_test)\r\n";
+					algostr += "svm_model <- svm(Y ~ ., data = X, kernel = \""+ kernel +"\", cost = "+ cost +", gamma = "+ gamma +", scale = FALSE, type =\"C-classification\")\r\n";
+					algostr += "predictions <- predict(svm_model, X)\r\n";
+					algostr += "table(predictions, Y)\r\n";
 					break;
 				case "nu-classification":
-					algostr += "svm_model <- svm(y_test ~ ., data = x_test, kernel = \""+ kernel +"\", cost = "+ cost +", scale = FALSE, type =\"nu-classification\")\r\n";
-					algostr += "predictions <- predict(svm_model, x_test)\r\n";
-					algostr += "table(predictions, y_test)\r\n";
+					algostr += "svm_model <- svm(Y ~ ., data = X, kernel = \""+ kernel +"\", cost = "+ cost +", gamma = "+ gamma +", scale = FALSE, type =\"nu-classification\")\r\n";
+					algostr += "predictions <- predict(svm_model, X)\r\n";
+					algostr += "table(predictions, Y)\r\n";
 					break;	
 				case "one-classification":
 					//TODO : impossible d'afficher des stats avec confusionMatrix pour ce svm
-					algostr += "svm_model <- svm(y_test ~ ., data = x_test, kernel = \""+ kernel +"\", cost = "+ cost +", scale = FALSE, type =\"one-classification\")\r\n";
-					algostr += "predictions <- predict(svm_model, x_test)\r\n";
-					algostr += "table(predictions, y_test)\r\n";
+					algostr += "svm_model <- svm(Y ~ ., data = X, kernel = \""+ kernel +"\", cost = "+ cost +", gamma = "+ gamma +", scale = FALSE, type =\"one-classification\")\r\n";
+					algostr += "predictions <- predict(svm_model, X)\r\n";
+					algostr += "table(predictions, Y)\r\n";
 					break;
 				}
 			}
@@ -123,9 +123,9 @@ public class RCompilateur implements Compilateur{
 			num = validation.getStratification().getNumber();
 			algostr += "train_control <- trainControl(method=\"cv\", number="+num+")\r\n";
 			algostr += "model <- train(" + columnToPredictName + "~ ., data=train, trControl=train_control, method=\""+trainingModel+"\")\r\n";
-			algostr += "x_test <- test[,1:ncol(test)-1]\r\n";
-			algostr += "y_test <-test[,ncol(test)]\r\n";
-			algostr += "predictions <- predict(model, x_test)\r\n";
+			algostr += "X <- test[,1:ncol(test)-1]\r\n";
+			algostr += "Y <-test[,ncol(test)]\r\n";
+			algostr += "predictions <- predict(model, X)\r\n";
 		}else if(validation.getStratification() instanceof TrainingTest) {
 			/*num = validation.getStratification().getNumber();
 			algostr += "set.seed(123)\r\n";
@@ -139,7 +139,7 @@ public class RCompilateur implements Compilateur{
 		String affiche  ="";
 		boolean writeInFile = false;
 		for (ValidationMetric laMetric : metrics) {
-			algostr += "cm <- confusionMatrix(predcictions, y_test, mode=\"prec_recall\")\r\n";
+			algostr += "cm <- confusionMatrix(predictions, Y, mode=\"prec_recall\")\r\n";
 			switch(laMetric.getLiteral()) {
 			case "balanced_accuracy":
 				//TODO
@@ -193,13 +193,30 @@ public class RCompilateur implements Compilateur{
 
 		String rCode = rImport + csvReading + predictivestr +predictorstr  + algostr + val + metric +affiche;
 		Long date = new Date().getTime();
-		Files.write(rCode.getBytes(), new File("mml_R"+date+".R"));		
-		
+		File rFile = new File("mml_R"+date+".R");
+		Files.write(rCode.getBytes(), rFile);		
+		String rFilePath = rFile.getAbsolutePath();
+		System.out.println(rFilePath);
 		long debut = System.currentTimeMillis();
-		Process p = Runtime.getRuntime().exec("R mml_R"+date+".R");
+		Process p = Runtime.getRuntime().exec("Rscript.exe --no-save "+rFilePath+"");
+		System.out.println();
 		long fin = System.currentTimeMillis()-debut;
 		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 		
+		String line; 
+		String recall ="";
+		while ((line = in.readLine()) != null) {
+			recall = line;
+			System.out.println(recall);
+		}
+		BufferedReader inError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+		
+		
+	
+		while ((line = inError.readLine()) != null) {
+			System.out.println(line);
+		}
+			
 		if (writeInFile) {
 			File myFile = new File("recall.csv");
 			FileOutputStream oFile = new FileOutputStream(myFile, true);

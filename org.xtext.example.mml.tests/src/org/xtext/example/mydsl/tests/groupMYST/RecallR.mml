@@ -1,4 +1,4 @@
-datainput "bigfoo.csv" separator ,
+datainput "iris.csv" separator ,
 mlframework R
 algorithm DT
 mlframework R

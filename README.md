@@ -21,3 +21,9 @@
 
 **In light of the results, which machine learning framework do you recommend?**
 + Yes
+
+### Required configuration
+
+**R language :**
++ add C:\Program Files\R\R-3.6.2\bin\x64 (or equivalent) to your PATH
++ add options(repos = "https://cran.r-project.org/",menu.graphics = FALSE) to your RProfile configuration file.
