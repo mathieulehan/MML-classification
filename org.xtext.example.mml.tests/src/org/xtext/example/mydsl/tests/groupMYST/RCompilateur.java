@@ -140,30 +140,30 @@ public class RCompilateur implements Compilateur{
 		boolean writeInFile = false;
 		for (ValidationMetric laMetric : metrics) {
 			algostr += "cm <- confusionMatrix(predictions, Y, mode=\"prec_recall\")\r\n";
+			algostr += "byClass <- cm$byClass\r\n";
 			switch(laMetric.getLiteral()) {
 			case "balanced_accuracy":
 				//TODO
-				metric +="balanceA <- cm$overall[['Balanced Accuracy']]"+"\r\n";
+				metric +="balancedA <- byClass[TRUE,c(\"Balanced Accuracy\")]"+"\r\n";
 				affiche  +="print(balanceA)"+"\r\n";
 				break;
 			case "recall":
 				//TODO
-				metric +="recall <- cm$overall[['Recall']]"+"\r\n";
+				metric +="recall <- byClass[TRUE,c(\"Recall\")]\r\n";
 				affiche  +="print(recall)"+"\r\n";
 				writeInFile = true;
 				break;
 			case "precision":
 				//TODO
-				metric +="precision <- cm$overall[['Precision']]"+"\r\n";
+				metric +="precision <- byClass[TRUE,c(\"Precision\")]"+"\r\n";
 				affiche  +="print(precision)"+"\r\n";
 				break;
 			case "F1":
 				//TODO
-				metric +="f1 <- cm$overall[['F1']]"+"\r\n";
+				metric +="F1 <- byClass[TRUE,c(\"F1\")]\r\n";
 				affiche  +="print(f1)"+"\r\n";
 				break;
 			case "accuracy":
-				//TODO
 				metric +="accuracy <- cm$overall[['Accuracy']]"+"\r\n";
 				affiche  +="print(accuracy)"+"\r\n";
 				break;
