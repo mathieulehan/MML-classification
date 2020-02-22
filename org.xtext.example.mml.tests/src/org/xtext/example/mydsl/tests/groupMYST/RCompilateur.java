@@ -45,14 +45,6 @@ public class RCompilateur implements Compilateur{
 		rImport += "library(caret)\r\n";
 		String csvReading = "data <- read.csv(\""+dataInput.getFilelocation()+"\", header = TRUE, sep = \""+separator+"\")\r\n";
 
-		String predictivestr = "";
-		if (predictive!= null ) {
-			predictivestr = "X <- data$"+predictive.getColName()+" <- NULL"+"\r\n";
-		}else {
-			//dernière colonne predictive.getColumn()
-			predictivestr = "X <- data - data[ncol(data)-1]"+"\r\n";
-		}
-
         BufferedReader br = new BufferedReader(new FileReader(dataInput.getFilelocation()));
         String header = br.readLine();
         if (header != null) {
@@ -60,7 +52,15 @@ public class RCompilateur implements Compilateur{
             columnToPredictName = columns[columns.length-1].trim();
         }
 		
-		String predictorstr ="Y <- data$" + columnToPredictName + "\r\n";
+		String predictivestr = "";
+		if (predictive!= null ) {
+			predictivestr = "X <- data$"+predictive.getColName()+"\r\n";
+		}else {
+			//dernière colonne predictive.getColumn()
+			predictivestr = "X <- subset(data, select=-" + columnToPredictName + ""+"\r\n";
+		}
+		
+		String predictorstr ="Y <- " + columnToPredictName + "\r\n";
 
 		String NameAlgo ="";
 		String algostr ="";
@@ -77,14 +77,23 @@ public class RCompilateur implements Compilateur{
 				algostr += "library(e1071)\r\n";
 				SVMClassification classification = svm.getSvmclassification();
 				switch (classification.getLiteral()) {
+				algostr += "X <- subset(data, select=-"+columnToPredictName+")";
+				algostr += "Y <- "+columnToPredictName+"";
 				case "C-classification":
-					algostr += "algo <- svm(Y ~ X, data = data, kernel = \""+ kernel +"\", cost = "+ cost +", scale = FALSE, type =\"C-classification\")";
+					algostr += "svm_model <- svm(Y ~ ., data = X, kernel = \""+ kernel +"\", cost = "+ cost +", scale = FALSE, type =\"C-classification\")";
+					algostr += "predictions <- predict(svm_model, X)";
+					algostr += "tale(predictions, Y)";
 					break;
 				case "nu-classification":
-					algostr += "algo <- svm(Y ~ X, data = data, kernel = \""+ kernel +"\", cost = "+ cost +", scale = FALSE, type =\"nu-classification\")";
+					algostr += "svm_model <- svm(Y ~ ., data = X, kernel = \""+ kernel +"\", cost = "+ cost +", scale = FALSE, type =\"nu-classification\")";
+					algostr += "predictions <- predict(svm_model, X)";
+					algostr += "tale(predictions, Y)";
 					break;	
 				case "one-classification":
-					algostr += "algo <- svm(Y ~ X, data = data, kernel = \""+ kernel +"\", cost = "+ cost +", scale = FALSE, type =\"one-classification\")";
+					//TODO : impossible d'afficher des stats avec confusionMatrix pour ce svm
+					algostr += "svm_model <- svm(Y ~ ., data = X, kernel = \""+ kernel +"\", cost = "+ cost +", scale = FALSE, type =\"one-classification\")";
+					algostr += "predictions <- predict(svm_model, X)";
+					algostr += "tale(predictions, Y)";
 					break;
 				}
 			}
