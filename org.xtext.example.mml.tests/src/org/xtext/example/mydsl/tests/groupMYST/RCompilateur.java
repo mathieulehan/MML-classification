@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.xtext.example.mydsl.mml.CrossValidation;
 import org.xtext.example.mydsl.mml.DT;
@@ -80,116 +82,117 @@ public class RCompilateur implements Compilateur{
 				SVMClassification classification = svm.getSvmclassification();
 				switch (classification.getLiteral()) {
 				case "C-classification":
-					algostr += "svm_model <- svm(Y ~ ., data = X, kernel = \""+ kernel +"\", cost = "+ cost +", gamma = "+ gamma +", scale = FALSE, type =\"C-classification\")\r\n";
-					algostr += "predictions <- predict(svm_model, X)\r\n";
-					algostr += "table(predictions, Y)\r\n";
+					algostr += "model <- svm(Y ~ ., data = X, kernel = \""+ kernel +"\", cost = "+ cost +", gamma = "+ gamma +", scale = FALSE, type =\"C-classification\")\r\n";
 					break;
 				case "nu-classification":
-					algostr += "svm_model <- svm(Y ~ ., data = X, kernel = \""+ kernel +"\", cost = "+ cost +", gamma = "+ gamma +", scale = FALSE, type =\"nu-classification\")\r\n";
-					algostr += "predictions <- predict(svm_model, X)\r\n";
-					algostr += "table(predictions, Y)\r\n";
+					algostr += "model <- svm(Y ~ ., data = X, kernel = \""+ kernel +"\", cost = "+ cost +", gamma = "+ gamma +", scale = FALSE, type =\"nu-classification\")\r\n";
 					break;	
 				case "one-classification":
 					//TODO : impossible d'afficher des stats avec confusionMatrix pour ce svm
-					algostr += "svm_model <- svm(Y ~ ., data = X, kernel = \""+ kernel +"\", cost = "+ cost +", gamma = "+ gamma +", scale = FALSE, type =\"one-classification\")\r\n";
-					algostr += "predictions <- predict(svm_model, X)\r\n";
-					algostr += "table(predictions, Y)\r\n";
+					algostr += "model <- svm(Y ~ ., data = X, kernel = \""+ kernel +"\", cost = "+ cost +", gamma = "+ gamma +", scale = FALSE, type =\"one-classification\")\r\n";
 					break;
 				}
 			}
 		}else if(algo instanceof DT) {
 			trainingModel += "rpart";
-			NameAlgo = "Decision Tree";
+			NameAlgo = "DecisionTree";
 		}else if(algo instanceof RandomForest ) {
 			algostr += "install.packages(\"randomForest\")\r\n";
 			algostr += "library(randomForest)\r\n";
 			trainingModel += "rf";
-			NameAlgo = "Random Forest";
+			NameAlgo = "RandomForest";
 		}else if(algo instanceof LogisticRegression) {
 			algostr += "install.packages(\"caTools\")\r\n";
 			algostr += "library(caTools)\r\n";
 			trainingModel += "LogitBoost";
-			NameAlgo = "Logistic Regression";
+			NameAlgo = "LogisticRegression";
 		}
 
 
 		int num;
 		String val = "";
 		if (validation.getStratification() instanceof CrossValidation) {
-			algostr += "set.seed(123)\r\n";
-			algostr += "sample <- createDataPartition(data$variety, p = .8, list = FALSE)\r\n";
-			algostr += "train <- data[sample, ]\r\n";
-			algostr += "test  <- data[-sample, ]\r\n";
-			num = validation.getStratification().getNumber();
-			algostr += "train_control <- trainControl(method=\"cv\", number="+num+")\r\n";
-			algostr += "model <- train(" + columnToPredictName + "~ ., data=train, trControl=train_control, method=\""+trainingModel+"\")\r\n";
-			algostr += "X <- test[,1:ncol(test)-1]\r\n";
-			algostr += "Y <-test[,ncol(test)]\r\n";
-			algostr += "predictions <- predict(model, X)\r\n";
+			val += "set.seed(123)\r\n";
+			String tmpAlgo = "sample <- createDataPartition(data$" + columnToPredictName + ", p = .8, list = FALSE)\r\n";
+			val += "train <- data[sample, ]\r\n";
+			val += "test  <- data[-sample, ]\r\n";
+			if (trainingModel != "") {
+				num = validation.getStratification().getNumber();
+				val += "train_control <- trainControl(method=\"cv\", number="+num+")\r\n";
+				tmpAlgo = "model <- train(" + columnToPredictName;
+				tmpAlgo = tmpAlgo.replace("\"", "");
+				val += tmpAlgo;
+				val += "~ ., data=train, trControl=train_control, method=\""+trainingModel+"\")\r\n";
+			}
+			val += "X <- test[,1:ncol(test)-1]\r\n";
+			val += "Y <-test[,ncol(test)]\r\n";
+			val += "predictions <- predict(model, X)\r\n";
 		}else if(validation.getStratification() instanceof TrainingTest) {
-			/*num = validation.getStratification().getNumber();
-			algostr += "set.seed(123)\r\n";
-			algostr += "sample <- createDataPartition(data$variety, p = .8, list = FALSE)\r\n";
-			algostr += "train <- data[sample, ]\r\n";
-			algostr += "test  <- data[-sample, ]\r\n";
-			algostr += "training <- train(unlist(data$"+ columnToPredictName +") ~ ., data = train,na.action = na.omit)\r\n";*/
+			num = validation.getStratification().getNumber();
+			val += "set.seed(123)\r\n";
+			String tmpAlgo = "sample <- createDataPartition(data$"+columnToPredictName+", p = " + (1-(num*0.01)) + ", list = FALSE)\r\n";
+			tmpAlgo = tmpAlgo.replace("\"", "");
+			val += tmpAlgo;
+			val += "train <- data[sample, ]\r\n";
+			val += "test  <- data[-sample, ]\r\n";
+			if (trainingModel != "") {
+				tmpAlgo = "model <- train(" + columnToPredictName;
+				tmpAlgo = tmpAlgo.replace("\"", "");
+				val += tmpAlgo;
+				val += "~ ., data=train, method=\""+trainingModel+"\")\r\n";
+			}
+			val += "X <- test[,1:ncol(test)-1]\r\n";
+			val += "Y <-test[,ncol(test)]\r\n";
+			val += "predictions <- predict(model, X)\r\n";
 		}
 
 		String metric ="";
 		String affiche  ="";
 		boolean writeInFile = false;
 		for (ValidationMetric laMetric : metrics) {
-			algostr += "cm <- confusionMatrix(predictions, Y, mode=\"prec_recall\")\r\n";
-			algostr += "byClass <- cm$byClass\r\n";
+			metric += "cm <- confusionMatrix(predictions, Y, mode=\"prec_recall\")\r\n";
+			metric += "byClass <- cm$byClass\r\n";
 			switch(laMetric.getLiteral()) {
 			case "balanced_accuracy":
-				//TODO
-				metric +="balancedA <- byClass[TRUE,c(\"Balanced Accuracy\")]"+"\r\n";
-				affiche  +="print(balanceA)"+"\r\n";
+				metric +="balancedA <- paste(mean(byClass[TRUE,c(\"Balanced Accuracy\")]))"+"\r\n";
+				affiche  +="print(paste(\"BalancedAccuracy:\", balanceA))"+"\r\n";
 				writeInFile = true;
 				break;
 			case "recall":
-				//TODO
-				metric +="recall <- byClass[TRUE,c(\"Recall\")]\r\n";
-				affiche  +="print(recall)"+"\r\n";
+				metric +="recall <- paste(mean(byClass[TRUE,c(\"Recall\")]))\r\n";
+				affiche  +="print(paste(\"Recall:\", recall))\r\n";
 				writeInFile = true;
 				break;
 			case "precision":
-				//TODO
-				metric +="precision <- byClass[TRUE,c(\"Precision\")]"+"\r\n";
-				affiche  +="print(precision)"+"\r\n";
+				metric +="precision <- paste(mean(byClass[TRUE,c(\"Precision\")]))"+"\r\n";
+				affiche  +="print(paste(\"Precision:\", precision)"+"\r\n";
 				writeInFile = true;
 				break;
 			case "F1":
-				//TODO
-				metric +="F1 <- byClass[TRUE,c(\"F1\")]\r\n";
-				affiche  +="print(f1)"+"\r\n";
+				metric +="F1 <- paste(mean(byClass[TRUE,c(\"F1\")]))\r\n";
+				affiche  +="print(paste(\"F1:\", f1))"+"\r\n";
 				writeInFile = true;
 				break;
 			case "accuracy":
 				metric +="accuracy <- cm$overall[['Accuracy']]"+"\r\n";
-				affiche  +="print(accuracy)"+"\r\n";
+				affiche  +="print(paste(\"Accuracy:\", accuracy)"+"\r\n";
 				writeInFile = true;
 				break;
 			case "macro_recall":
-				//TODO
-				metric +="macroRecall <- mean(byClass[TRUE,c(\"Recall\")])"+"\r\n";
-				affiche  +="print(macroRecall)"+"\r\n";
+				metric +="macroRecall <- paste(mean(byClass[TRUE,c(\"Recall\")]))\r\n";
+				affiche  +="print(paste(\"MacroRecall:\", macroRecall))\r\n";
 				break;
 			case "macro_precision":
-				//TODO
-				metric +="macroPrecision <- mean(byClass[TRUE,c(\"Precision\")])"+"\r\n";
-				affiche  +="print(macroPrecision)"+"\r\n";
+				metric +="macroPrecision <- paste(mean(byClass[TRUE,c(\"Precision\")]))"+"\r\n";
+				affiche  +="print(paste(\"MacroPrecision:\", macroPrecision))"+"\r\n";
 				break;
 			case "macro_F1":
-				//TODO
-				metric +="macroF1 <- mean(byClass[TRUE,c(\"F1\")])"+"\r\n";
-				affiche  +="print(macroF1)"+"\r\n";
+				metric +="macroF1 <- paste(mean(byClass[TRUE,c(\"F1\")]))"+"\r\n";
+				affiche  +="print(paste(\"MacroF1:\", macroF1))"+"\r\n";
 				break;
 			case "macro_accuracy":
-				//TODO
-				metric +="macroAccuracy <- mean(byClass[TRUE,c(\"Balanced Accuracy\")])"+"\r\n";
-				affiche  +="print(macroAccuracy)"+"\r\n";
+				metric +="macroAccuracy <- paste(mean(byClass[TRUE,c(\"Balanced Accuracy\")]))"+"\r\n";
+				affiche  +="print(paste(\"MacroAccuracy:\", macroAccuracy))"+"\r\n";
 				break;
 			}
 
@@ -200,31 +203,34 @@ public class RCompilateur implements Compilateur{
 		File rFile = new File("mml_R"+date+".R");
 		Files.write(rCode.getBytes(), rFile);		
 		String rFilePath = rFile.getAbsolutePath();
-		System.out.println(rFilePath);
 		long debut = System.currentTimeMillis();
-		Process p = Runtime.getRuntime().exec("Rscript.exe --no-save "+rFilePath+"");
+		Process p = Runtime.getRuntime().exec("Rscript.exe --vanilla --quiet --slave "+rFilePath+"");
 		System.out.println();
 		long fin = System.currentTimeMillis()-debut;
 		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 		
 		String line; 
-		String recall ="";
+		String consoleOutput = "";
 		while ((line = in.readLine()) != null) {
-			recall = line;
-			System.out.println(recall);
+			consoleOutput += line;
 		}
-		BufferedReader inError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 		
-		
+		BufferedReader inError = new BufferedReader(new InputStreamReader(p.getErrorStream()));		
 	
 		while ((line = inError.readLine()) != null) {
 			System.out.println(line);
 		}
 			
 		if (writeInFile) {
+			// Gets recall from R output
+			String recall ="";
+			Pattern recallPattern =Pattern.compile("\"Recall:(.*?)\"");
+			Matcher matcher = recallPattern.matcher(consoleOutput);
+			while(matcher.find()) recall += matcher.group(1);
+			
 			File myFile = new File("recall.csv");
 			FileOutputStream oFile = new FileOutputStream(myFile, true);
-			oFile.write((dataInput.getFilelocation() +";"+NameAlgo+";R;"+fin+";"+in.read()+"\n").getBytes());
+			oFile.write((dataInput.getFilelocation() +";"+NameAlgo+";R;"+fin+";"+recall.trim()+"\n").getBytes());
 			oFile.close();
 			}
 
