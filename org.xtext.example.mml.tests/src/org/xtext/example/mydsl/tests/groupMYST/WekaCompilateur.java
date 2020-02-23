@@ -45,8 +45,11 @@ public class WekaCompilateur implements Compilateur {
 	CSVLoader loader = new CSVLoader();
 	loader.setSource(new File(dataInput.getFilelocation()));
 	loader.setNominalAttributes("first-last");
+	
 	Instances data = loader.getDataSet();
-
+	String nameAlgo = null;
+	
+	
 	int trainSize = (int) Math.round(data.numInstances() * 0.8);
 	int testSize = data.numInstances() - trainSize;
 	Instances train = new Instances(data, trainSize);
@@ -58,16 +61,21 @@ public class WekaCompilateur implements Compilateur {
         data.setClassIndex(data.numAttributes() - 1);
     }
 	
+	long debut = System.currentTimeMillis();
+	
 	Classifier classifier = null;
 	
 	if(algo instanceof SVM) {
 //	    Y a po !!
 	}else if(algo instanceof DT) {
 		classifier = new J48();
+		nameAlgo = "DT";
 	}else if(algo instanceof org.xtext.example.mydsl.mml.RandomForest ) {
 		classifier = new RandomForest();
+		nameAlgo = "RandomForest";
 	}else if(algo instanceof LogisticRegression) {
 		classifier = new Logistic();
+		nameAlgo = "LogisticRegression";
 	}
 		
 	Evaluation eval = null;
@@ -146,20 +154,19 @@ public class WekaCompilateur implements Compilateur {
 	System.out.println(classifier);
 	try {
 		System.out.println(eval.toMatrixString("Confusion matrix:"));
+		System.out.println("Recall : "+eval.weightedRecall());
+		System.out.println("Precision : "+eval.weightedPrecision());
 	} catch (Exception e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-//Long date = new Date().getTime();
-//	Files.write(pandasCode.getBytes(), new File("mml_Weka_"+date+".py"));
-
-//	Process p = Runtime.getRuntime().exec("python mml"+date+".py");
-//	BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-		
+	
+	long fin = System.currentTimeMillis()-debut;
+	
 	if (writeInFile) {
 		File myFile = new File("recall.csv");
 		FileOutputStream oFile = new FileOutputStream(myFile, true);
-		//oFile.write((dataInput.getFilelocation() +";"+NameAlgo+";Weka"+ ";"+fin+";"+in.read()+"\n").getBytes());
+		oFile.write((dataInput.getFilelocation() +";"+nameAlgo+";Weka"+ ";"+fin+";"+eval.weightedRecall()+"\n").getBytes());
 		oFile.close();
 		}
 	}
