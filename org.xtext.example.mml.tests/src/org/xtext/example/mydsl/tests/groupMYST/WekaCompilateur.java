@@ -89,40 +89,43 @@ public class WekaCompilateur implements Compilateur {
 	}else if (validation.getStratification() instanceof TrainingTest) {
 	   
 	}
-	boolean writeInFile = false;
-	for (ValidationMetric laMetric : metrics) {
-	switch(laMetric.getLiteral()) {
-	  case "balanced_accuracy":
-		  
-	    break;
-	  case "recall":
-		  for(int i = 0; i<data.numAttributes();i++) {
-			  eval.recall(i);
-		  }
-		  writeInFile = true;
-	    break;
-	  case "precision":
-		  eval.precision(0);
+		boolean writeInFile = false;
+		for (ValidationMetric laMetric : metrics) {
+		switch(laMetric.getLiteral()) {
+		  case "balanced_accuracy":
+			  
 		    break;
-	  case "F1":
-		  	
+		  case "recall":
+			  for(int i = 0; i<data.numAttributes()-3;i++) {
+				  eval.recall(i);
+			  }
+			  writeInFile = true;
 		    break;
-	  case "accuracy":
-		  
-		    break;
-	  case "macro_recall":
-		  
-		    break;
-	  case "macro_precision":
-		  
-		    break;
-	  case "macro_F1":
-		  
-		    break;
-	  case "macro_accuracy":
-		  
-		    break;
-	}
+		  case "precision":
+			  for(int i = 0; i<data.numAttributes()-3;i++) {
+				  eval.precision(i);
+			  }
+			  writeInFile = true;
+			break;
+		  case "F1":
+			  	
+			    break;
+		  case "accuracy":
+			  
+			    break;
+		  case "macro_recall":
+			  
+			    break;
+		  case "macro_precision":
+			  
+			    break;
+		  case "macro_F1":
+			  
+			    break;
+		  case "macro_accuracy":
+			  
+			    break;
+		}
 
 	}
 	
@@ -141,6 +144,12 @@ public class WekaCompilateur implements Compilateur {
 	}
 	System.out.println(eval.toSummaryString("\nResults\n======\n", false));
 	System.out.println(classifier);
+	try {
+		System.out.println(eval.toMatrixString("Confusion matrix:"));
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 //Long date = new Date().getTime();
 //	Files.write(pandasCode.getBytes(), new File("mml_Weka_"+date+".py"));
 
