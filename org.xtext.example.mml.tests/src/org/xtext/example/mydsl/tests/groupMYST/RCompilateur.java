@@ -146,6 +146,7 @@ public class RCompilateur implements Compilateur{
 				//TODO
 				metric +="balancedA <- byClass[TRUE,c(\"Balanced Accuracy\")]"+"\r\n";
 				affiche  +="print(balanceA)"+"\r\n";
+				writeInFile = true;
 				break;
 			case "recall":
 				//TODO
@@ -157,35 +158,38 @@ public class RCompilateur implements Compilateur{
 				//TODO
 				metric +="precision <- byClass[TRUE,c(\"Precision\")]"+"\r\n";
 				affiche  +="print(precision)"+"\r\n";
+				writeInFile = true;
 				break;
 			case "F1":
 				//TODO
 				metric +="F1 <- byClass[TRUE,c(\"F1\")]\r\n";
 				affiche  +="print(f1)"+"\r\n";
+				writeInFile = true;
 				break;
 			case "accuracy":
 				metric +="accuracy <- cm$overall[['Accuracy']]"+"\r\n";
 				affiche  +="print(accuracy)"+"\r\n";
+				writeInFile = true;
 				break;
 			case "macro_recall":
 				//TODO
-				metric +=""+"\r\n";
-				affiche  +=""+"\r\n";
+				metric +="macroRecall <- mean(byClass[TRUE,c(\"Recall\")])"+"\r\n";
+				affiche  +="print(macroRecall)"+"\r\n";
 				break;
 			case "macro_precision":
 				//TODO
-				metric +=""+"\r\n";
-				affiche  +=""+"\r\n";
+				metric +="macroPrecision <- mean(byClass[TRUE,c(\"Precision\")])"+"\r\n";
+				affiche  +="print(macroPrecision)"+"\r\n";
 				break;
 			case "macro_F1":
 				//TODO
-				metric +=""+"\r\n";
-				affiche  +=""+"\r\n";
+				metric +="macroF1 <- mean(byClass[TRUE,c(\"F1\")])"+"\r\n";
+				affiche  +="print(macroF1)"+"\r\n";
 				break;
 			case "macro_accuracy":
 				//TODO
-				metric +=""+"\r\n";
-				affiche  +=""+"\r\n";
+				metric +="macroAccuracy <- mean(byClass[TRUE,c(\"Balanced Accuracy\")])"+"\r\n";
+				affiche  +="print(macroAccuracy)"+"\r\n";
 				break;
 			}
 
