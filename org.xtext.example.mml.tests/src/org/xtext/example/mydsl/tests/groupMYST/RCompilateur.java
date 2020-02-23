@@ -149,55 +149,61 @@ public class RCompilateur implements Compilateur{
 		String metric ="";
 		String affiche  ="";
 		boolean writeInFile = false;
-		for (ValidationMetric laMetric : metrics) {
+		if (!metrics.isEmpty()) {
 			metric += "cm <- confusionMatrix(predictions, Y, mode=\"prec_recall\")\r\n";
 			metric += "byClass <- cm$byClass\r\n";
-			switch(laMetric.getLiteral()) {
-			case "balanced_accuracy":
-				metric +="balancedA <- paste(mean(byClass[TRUE,c(\"Balanced Accuracy\")]))"+"\r\n";
-				affiche  +="print(paste(\"BalancedAccuracy:\", balanceA))"+"\r\n";
-				writeInFile = true;
-				break;
-			case "recall":
-				metric +="recall <- paste(mean(byClass[TRUE,c(\"Recall\")]))\r\n";
-				affiche  +="print(paste(\"Recall:\", recall))\r\n";
-				writeInFile = true;
-				break;
-			case "precision":
-				metric +="precision <- paste(mean(byClass[TRUE,c(\"Precision\")]))"+"\r\n";
-				affiche  +="print(paste(\"Precision:\", precision)"+"\r\n";
-				writeInFile = true;
-				break;
-			case "F1":
-				metric +="F1 <- paste(mean(byClass[TRUE,c(\"F1\")]))\r\n";
-				affiche  +="print(paste(\"F1:\", f1))"+"\r\n";
-				writeInFile = true;
-				break;
-			case "accuracy":
-				metric +="accuracy <- cm$overall[['Accuracy']]"+"\r\n";
-				affiche  +="print(paste(\"Accuracy:\", accuracy)"+"\r\n";
-				writeInFile = true;
-				break;
-			case "macro_recall":
-				metric +="macroRecall <- paste(mean(byClass[TRUE,c(\"Recall\")]))\r\n";
-				affiche  +="print(paste(\"MacroRecall:\", macroRecall))\r\n";
-				break;
-			case "macro_precision":
-				metric +="macroPrecision <- paste(mean(byClass[TRUE,c(\"Precision\")]))"+"\r\n";
-				affiche  +="print(paste(\"MacroPrecision:\", macroPrecision))"+"\r\n";
-				break;
-			case "macro_F1":
-				metric +="macroF1 <- paste(mean(byClass[TRUE,c(\"F1\")]))"+"\r\n";
-				affiche  +="print(paste(\"MacroF1:\", macroF1))"+"\r\n";
-				break;
-			case "macro_accuracy":
-				metric +="macroAccuracy <- paste(mean(byClass[TRUE,c(\"Balanced Accuracy\")]))"+"\r\n";
-				affiche  +="print(paste(\"MacroAccuracy:\", macroAccuracy))"+"\r\n";
-				break;
+			for (ValidationMetric laMetric : metrics) {
+				switch(laMetric.getLiteral()) {
+				case "balanced_accuracy":
+					metric +="balanceA <- paste(mean(byClass[TRUE,c(\"Balanced Accuracy\")]))"+"\r\n";
+					affiche  +="print(paste(\"BalancedAccuracy:\", balanceA))"+"\r\n";
+					writeInFile = true;
+					break;
+				case "recall":
+					metric +="recall <- paste(mean(byClass[TRUE,c(\"Recall\")]))\r\n";
+					affiche  +="print(paste(\"Recall:\", recall))\r\n";
+					writeInFile = true;
+					break;
+				case "precision":
+					metric +="precision <- paste(mean(byClass[TRUE,c(\"Precision\")]))"+"\r\n";
+					affiche  +="print(paste(\"Precision:\", precision))"+"\r\n";
+					writeInFile = true;
+					break;
+				case "F1":
+					metric +="F1 <- paste(mean(byClass[TRUE,c(\"F1\")]))\r\n";
+					affiche  +="print(paste(\"F1:\", F1))"+"\r\n";
+					writeInFile = true;
+					break;
+				case "accuracy":
+					metric +="accuracy <- cm$overall[['Accuracy']]"+"\r\n";
+					affiche  +="print(paste(\"Accuracy:\", accuracy))"+"\r\n";
+					writeInFile = true;
+					break;
+				case "macro_recall":
+					metric +="macroRecall <- paste(mean(byClass[TRUE,c(\"Recall\")]))\r\n";
+					affiche  +="print(paste(\"MacroRecall:\", macroRecall))\r\n";
+					writeInFile = true;
+					break;
+				case "macro_precision":
+					metric +="macroPrecision <- paste(mean(byClass[TRUE,c(\"Precision\")]))"+"\r\n";
+					affiche  +="print(paste(\"MacroPrecision:\", macroPrecision))"+"\r\n";
+					writeInFile = true;
+					break;
+				case "macro_F1":
+					metric +="macroF1 <- paste(mean(byClass[TRUE,c(\"F1\")]))"+"\r\n";
+					affiche  +="print(paste(\"MacroF1:\", macroF1))"+"\r\n";
+					writeInFile = true;
+					break;
+				case "macro_accuracy":
+					metric +="macroAccuracy <- paste(mean(byClass[TRUE,c(\"Balanced Accuracy\")]))"+"\r\n";
+					affiche  +="print(paste(\"MacroAccuracy:\", macroAccuracy))"+"\r\n";
+					writeInFile = true;
+					break;
+				}
+	
 			}
-
 		}
-
+		
 		String rCode = rImport + csvReading + predictivestr +predictorstr  + algostr + val + metric +affiche;
 		Long date = new Date().getTime();
 		File rFile = new File("mml_R"+date+".R");
@@ -222,15 +228,52 @@ public class RCompilateur implements Compilateur{
 		}
 			
 		if (writeInFile) {
-			// Gets recall from R output
-			String recall ="";
-			Pattern recallPattern =Pattern.compile("\"Recall:(.*?)\"");
-			Matcher matcher = recallPattern.matcher(consoleOutput);
-			while(matcher.find()) recall += matcher.group(1);
+			// Gets metrics from R output
+			String metricsString = "", balancedAccuracy = "", recall = "", precision = "", F1 = "", accuracy = "", macroRecall = "", macroPrecision = "", macroF1 = "", macroAccuracy = "";
+			for (ValidationMetric laMetric : metrics) {
+				switch(laMetric.getLiteral()) {
+				case "balanced_accuracy":
+					balancedAccuracy = this.getMetricFromOutput("BalancedAccuracy", consoleOutput);
+					metricsString += balancedAccuracy + ";";
+					break;
+				case "recall":
+					recall = this.getMetricFromOutput("Recall", consoleOutput);
+					metricsString += recall + ";";
+					break;
+				case "precision":
+					precision = this.getMetricFromOutput("Precision", consoleOutput);
+					metricsString += precision + ";";
+					break;
+				case "F1":
+					F1 = this.getMetricFromOutput("F1", consoleOutput);
+					metricsString += F1 + ";";
+					break;
+				case "accuracy":
+					accuracy = this.getMetricFromOutput("Accuracy", consoleOutput);
+					metricsString += accuracy + ";";
+					break;
+				case "macro_recall":
+					macroRecall = this.getMetricFromOutput("MacroRecall", consoleOutput);
+					metricsString += macroRecall + ";";
+					break;
+				case "macro_precision":
+					macroPrecision = this.getMetricFromOutput("MacroPrecision", consoleOutput);
+					metricsString += macroPrecision + ";";
+					break;
+				case "macro_F1":
+					macroF1 = this.getMetricFromOutput("MacroF1", consoleOutput);
+					metricsString += macroF1 + ";";
+					break;
+				case "macro_accuracy":
+					macroAccuracy = this.getMetricFromOutput("MacroAccuracy", consoleOutput);
+					metricsString += macroAccuracy + ";";
+					break;
+				}
+			}
 			
 			File myFile = new File("recall.csv");
 			FileOutputStream oFile = new FileOutputStream(myFile, true);
-			oFile.write((dataInput.getFilelocation() +";"+NameAlgo+";R;"+fin+";"+recall.trim()+"\n").getBytes());
+			oFile.write((dataInput.getFilelocation() +";"+NameAlgo+";R;"+fin+";"+metricsString+"\n").getBytes());
 			oFile.close();
 			}
 
@@ -249,4 +292,13 @@ public class RCompilateur implements Compilateur{
 	private String mkValueInSingleQuote(String val) {
 		return "'" + val + "'";
 	}
+	
+	private String getMetricFromOutput(String metricName, String output) {
+		String metric ="";
+		Pattern metricPattern = Pattern.compile("\""+metricName+":(.*?)\"");
+		Matcher matcher = metricPattern.matcher(output);
+		while(matcher.find()) metric += matcher.group(1);
+		return metric.trim();
+	}
+	
 }
