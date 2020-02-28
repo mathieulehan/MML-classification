@@ -128,10 +128,19 @@ public class XgboostCompilateur implements Compilateur{
 		
 		int num;
 		String val = "";
+		String affiche ="";
+		boolean cv = false;
 		if (validation.getStratification() instanceof CrossValidation) {
-			 pythonImport += "from sklearn.model_selection import cross_val_predict"+"\r\n";
+			 pythonImport = "import xgboost as xgb\r\n";
 			 num = validation.getStratification().getNumber();
-			 val = "y_pred = cross_val_predict(algo, X, Y, cv="+(int) num+")"+"\r\n";
+			 csvReading = "dtrain = xgb.DMatrix('iris.csv')\r\n" +
+			 		"param = {'max_depth':2, 'eta':1, 'silent':1, 'objective':'reg:squarederror'}\r\n" + 
+			 		"num_round = "+(int) num +"\r\n";
+			 val = "result = xgb.cv(param, dtrain, num_round, nfold=5,\r\n" + 
+			 		"       metrics={'error'}, seed=0,\r\n" + 
+			 		"       callbacks=[xgb.callback.print_evaluation(show_stdv=True)])\r\n";
+			 affiche = "print(result)";
+			 cv = true;
 		}
 		else if (validation.getStratification() instanceof TrainingTest) {
 		  pythonImport += "from sklearn.model_selection import train_test_split"+"\r\n";
@@ -144,59 +153,61 @@ public class XgboostCompilateur implements Compilateur{
 		}
 		
 		boolean writeInFile = false;
-		String affiche ="";
 		String metric ="";
-		for (ValidationMetric laMetric : metrics) {
-			switch(laMetric.getLiteral()) {
-				case "balanced_accuracy":
-					xgboostImport +="from sklearn.metrics import balanced_accuracy_score"+"\r\n";
-					metric +="balanceA = balanced_accuracy_score(Y, y_pred)"+"\r\n";
-					affiche  +="print(balanceA)";
-					break;
-				case "precision":
-					xgboostImport +="from sklearn.metrics import precision_score"+"\r\n";
-					metric +="precision = precision_score(Y, y_pred, average='micro')"+"\r\n";
-					affiche  +="print(precision)";
-					break;
-				case "recall":
-					xgboostImport +="from sklearn.metrics import recall_score"+"\r\n";
-					metric +="recall = recall_score(Y, y_pred,average='micro' )"+"\r\n";
-					affiche  +="print(recall)"+"\r\n";
-					writeInFile = true;
-					break;
-				case "F1":
-					xgboostImport +="from sklearn.metrics import f1_score"+"\r\n";
-					metric +="f1 = f1_score(Y, y_pred, average='micro')"+"\r\n";
-					affiche  +="print(f1)";
-					break;
-				case "accuracy":
-					xgboostImport +="from sklearn.metrics import accuracy_score"+"\r\n";
-					metric +="accuracy = accuracy_score(Y, y_pred)"+"\r\n";
-					affiche  +="print(accuracy)";
-					break;
-				case "macro_recall":
-					xgboostImport +="from sklearn.metrics import recall_score"+"\r\n";
-					metric +="recall = recall_score(Y, y_pred,average='macro' )"+"\r\n";
-					affiche  +="print(recall)";
-					break;
-				case "macro_precision":
-					xgboostImport +="from sklearn.metrics import precision_score"+"\r\n";
-					metric +="precision = precision_score(Y, y_pred, average='macro')"+"\r\n";
-					affiche  +="print(precision)";
-					break;
-				case "macro_F1":
-					xgboostImport +="from sklearn.metrics import f1_score"+"\r\n";
-					metric +="f1 = f1_score(Y, y_pred, average='macro')"+"\r\n";
-					affiche  +="print(f1)";
-					break;
-				case "macro_accuracy":
-					//TODO
-					metric +=""+"\r\n";
-					affiche  +=""+"\r\n";
-					break;
-			}
+		if(!cv) {
+			for (ValidationMetric laMetric : metrics) {
+				switch(laMetric.getLiteral()) {
+					case "balanced_accuracy":
+						xgboostImport +="from sklearn.metrics import balanced_accuracy_score"+"\r\n";
+						metric +="balanceA = balanced_accuracy_score(Y, y_pred)"+"\r\n";
+						affiche  +="print(balanceA)";
+						break;
+					case "precision":
+						xgboostImport +="from sklearn.metrics import precision_score"+"\r\n";
+						metric +="precision = precision_score(Y, y_pred, average='micro')"+"\r\n";
+						affiche  +="print(precision)";
+						break;
+					case "recall":
+						xgboostImport +="from sklearn.metrics import recall_score"+"\r\n";
+						metric +="recall = recall_score(Y, y_pred,average='micro' )"+"\r\n";
+						affiche  +="print(recall)"+"\r\n";
+						writeInFile = true;
+						break;
+					case "F1":
+						xgboostImport +="from sklearn.metrics import f1_score"+"\r\n";
+						metric +="f1 = f1_score(Y, y_pred, average='micro')"+"\r\n";
+						affiche  +="print(f1)";
+						break;
+					case "accuracy":
+						xgboostImport +="from sklearn.metrics import accuracy_score"+"\r\n";
+						metric +="accuracy = accuracy_score(Y, y_pred)"+"\r\n";
+						affiche  +="print(accuracy)";
+						break;
+					case "macro_recall":
+						xgboostImport +="from sklearn.metrics import recall_score"+"\r\n";
+						metric +="recall = recall_score(Y, y_pred,average='macro' )"+"\r\n";
+						affiche  +="print(recall)";
+						break;
+					case "macro_precision":
+						xgboostImport +="from sklearn.metrics import precision_score"+"\r\n";
+						metric +="precision = precision_score(Y, y_pred, average='macro')"+"\r\n";
+						affiche  +="print(precision)";
+						break;
+					case "macro_F1":
+						xgboostImport +="from sklearn.metrics import f1_score"+"\r\n";
+						metric +="f1 = f1_score(Y, y_pred, average='macro')"+"\r\n";
+						affiche  +="print(f1)";
+						break;
+					case "macro_accuracy":
+						//TODO
+						metric +=""+"\r\n";
+						affiche  +=""+"\r\n";
+						break;
+				}
 
+			}
 		}
+		
 		
 		String xgBoostCode = boostImport + csvReading+ predictivestr +predictorstr  + algostr + val + metric +affiche;
 		Long date = new Date().getTime();
