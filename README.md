@@ -20,7 +20,7 @@ We used the iris dataset, the variable to predict beeing the flower variety (Set
 
 **On your datasets, which framework + algorithm is best ranked (compared to other frameworks) in terms of :**
 + Execution time : R is taking from 6 to 15 seconds (depending on the algorithm) to process iris.csv dataset. Weka is a bit slower, and Scikitlearn is the fastest.
-+ Recall : R algorithms have a recall of 0.95. Weka : ... and Scikitlearn : ...
++ Recall : R algorithms have a recall of 0.95. Weka : ... and Scikitlearn : 0.98
 
 **Among machine learning frameworks and algorithms, are some implementations significantly slower/precise than others ?**
 + Sickit-learn seems more precise, with a recall at 98 percent
