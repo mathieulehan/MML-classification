@@ -14,7 +14,7 @@ We used the iris dataset, the variable to predict beeing the flower variety (Set
 
 ###Results
 
-
+![Results](report.png)
 
 ### Answers to the requested questions
 
@@ -50,14 +50,19 @@ About the results, ...
 
 ### Required configuration
 
-**R language :**
+**R :**
 + add C:\Program Files\R\R-3.6.2\bin\x64 (or equivalent) to your PATH
 + add options(repos = "https://cran.r-project.org/",menu.graphics = FALSE) to your RProfile configuration file.
 + you may need to launch Eclipse with privileges in order to install R libraries correctly.
 
-**Python :**
+**Scikitlearn :**
 + In ScikitLearnCompilateur.java, replace python.exe's path by your own.
+
+**XgBoost :**
 + In XgboostCompilateur.java, replace python.exe's path by your own.
+
+**Weka :**
++ In org.xtext.example.mml.tests, add weka-3.7.jar as an external library. (Download link : http://www.java2s.com/Code/Jar/w/Downloadweka370jar.htm)
 
 ### Problems encountered
 + No SVM & Training Test implementations was found for Weka.
@@ -66,3 +71,4 @@ About the results, ...
 + We have to install R libraries a the beginning of each execution.
 + CrossValidation with R only works when the file is executed in RStudio, not when executed using RScript.
 + Weka won't create a model for Logistic Regression with iris dataset beacause it is too small.
++ R's recall & precision are the same, regardless of the algorithm used.
