@@ -74,7 +74,7 @@ About the results, ...
 ### Problems encountered
 + No SVM & Training Test implementations was found for Weka.
 + Only precision & recall metrics were retrievable from Weka.
-+ We were unable to fetch and write XgBoost's metrics to a CSV file.
++ We were unable to fetch and write XGBoost's metrics to a CSV file except for DecisionTree.
 + We have to install R libraries a the beginning of each execution.
 + CrossValidation with R only works when the file is executed in RStudio, not when executed using RScript.
 + Weka won't create a model for Logistic Regression with iris dataset beacause it is too small.
