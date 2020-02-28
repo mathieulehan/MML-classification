@@ -18,8 +18,7 @@ We used the iris dataset, the variable to predict beeing the flower variety (Set
 execution time and are based on only one execution for the recall.
 That means the execution time can be higher or lower depending on the hardware but globally, 
 wont change anything in our ranking due to the proportionality relationship.
-For the recall, results can differ from one execution to another (from 0.98 to 0.96 
-to 0.94 to 0.92 in python for both libraries ScikitLearn and XGBoost). But algorithms 
+For the recall, results can differ from one execution to another (from 0.98 to 0.89) in Python for both libraries ScikitLearn and XGBoost). But algorithms 
 could be compared over a given number of iterations.
 
 ![Results](report.png)
