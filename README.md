@@ -75,4 +75,4 @@ About the results, ...
 + Training test using XGBoost (xgb) can be done using the DMatrix function for each set but the 
   function apparently needs a label to be explicited after the train_test_split which always returned an error. We apparently can also use the function dump_svmlight_file that from sklearn.datasets to "prepare" data for the XGBoost DMatrix() but that always returned a path error followed by a label error regardless off the num_class (class number hyperparameter) entered. This is why we use the predict sklearn function on the xgb algorithm to predict values and then apply metrics on it.
 + XGBRegressor can be used to make a LogisticRegression, but the only metrics we can 
-  get from the data returned by the predict function is "score" which uses the default estimator's scoring method available. We have not been able to return the other eval_metrics using XGBRegressor.
+  get from the data returned by the predict function is "score" which uses the default estimator's scoring method available which does not work well with String values as in iris.csv file. We have not been able to return the other eval_metrics using XGBRegressor.
