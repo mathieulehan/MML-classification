@@ -273,3 +273,7 @@ org.xtext.example.mml.ui.tests/xtend-gen/
 org.xtext.example.mml.ui/org.xtext.example.mml.ui.iml
 org.xtext.example.mml/org.xtext.example.mml.iml
 .Rproj.user
+
+org.xtext.example.mml.tests/recall.csv
+
+*.R
