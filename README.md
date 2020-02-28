@@ -23,7 +23,7 @@ We used the iris dataset, the variable to predict beeing the flower variety (Set
 + Recall : R algorithms have a recall of 0.95. Weka : ... and Scikitlearn : 0.98
 
 **Among machine learning frameworks and algorithms, are some implementations significantly slower/precise than others ?**
-+ Sickit-learn seems more precise, with a recall at 98 percent
++ Sickit-learn seems more precise, with a recall at 98 percent for the training test and SVM, Ramdom Forest, Logistic Regression. It means that it predicts in 98 percent of cases the right variety of flower
 
 **Given a machine learning algorithm (e.g., decision tree), do we observe differences (execution time/precision) between frameworks?**
 * Decision Tree: 
@@ -40,8 +40,7 @@ We used the iris dataset, the variable to predict beeing the flower variety (Set
 	* Weka execution time (Cross validation) = , recall = , precision = ; 
 
 **Are there more difficult datasets to process in terms of:**
-+ Recall? ...
-+ Execution time ? : .....
++ We did not encounter many difficulties to implement the different frameworks. We didn't have time to test other datasets.
 
 **In light of the results, which machine learning framework do you recommend?**
 R and Python both have great communities providing documentation & libraries, whereas few documentation was found about Weka.
