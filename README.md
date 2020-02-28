@@ -40,8 +40,7 @@ We used the iris dataset, the variable to predict beeing the flower variety (Set
 	* Weka execution time (Cross validation) = , recall = , precision = ; 
 
 **Are there more difficult datasets to process in terms of:**
-+ Recall? ...
-+ Execution time ? : .....
++ We did not encounter many difficulties to implement the different frameworks. We didn't have time to test other datasets.
 
 **In light of the results, which machine learning framework do you recommend?**
 R and Python both have great communities providing documentation & libraries, whereas few documentation was found about Weka.
