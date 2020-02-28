@@ -20,7 +20,15 @@ We used the iris dataset, the variable to predict beeing the flower variety (Set
 
 **On your datasets, which framework + algorithm is best ranked (compared to other frameworks) in terms of :**
 + Execution time : R is taking from 6 to 15 seconds (depending on the algorithm) to process iris.csv dataset. Weka is a bit slower, and Scikitlearn is the fastest.
-+ Recall : R algorithms have a recall of 0.95. Weka : ... and Scikitlearn : 0.98
++ Recall : R algorithms have a recall of 0.95. Weka : ..., Scikitlearn : 0.98 and XGBoost 
+  : 0.96.
+Keep in mind that the results we are getting can vary between two computers for the 
+execution time and are based on only one execution for the recall.
+That means the execution time can be higher or lower depending on the hardware but globally, 
+wont change anything in our ranking due to the proportionality relationship.
+For the recall, results can differ from one execution to another (from 0.98 to 0.96 
+to 0.94 to 0.92 in python for both libraries ScikitLearn and XGBoost). But algorithms 
+could be compared over a given number of iterations.
 
 **Among machine learning frameworks and algorithms, are some implementations significantly slower/precise than others ?**
 + Sickit-learn seems more precise, with a recall at 98 percent for the training test and SVM, Ramdom Forest, Logistic Regression. It means that it predicts in 98 percent of cases the right variety of flower
@@ -73,5 +81,5 @@ About the results, ...
 + R's recall & precision are the same, regardless of the algorithm used.
 + Training test using XGBoost (xgb) can be done using the DMatrix function for each set but the 
   function apparently needs a label to be explicited after the train_test_split which always returned an error. We apparently can also use the function dump_svmlight_file that from sklearn.datasets to "prepare" data for the XGBoost DMatrix() but that always returned a path error followed by a label error regardless off the num_class (class number hyperparameter) entered. This is why we use the predict sklearn function on the xgb algorithm to predict values and then apply metrics on it.
-+ XGBRegressor can be used to make a LogisticRegression, but the only metrics we can 
-  get from the data returned by the predict function is "score" which uses the default estimator's scoring method available which does not work well with String values as in iris.csv file. We have not been able to return the other eval_metrics using XGBRegressor.
++ XGBRegressor can be used to make a LogisticRegression but it does not work with 
+  file containing String values as in 'iris.csv' due to a label error once again with DMatrix, but definitely works with integer-based csv files.
