@@ -42,7 +42,8 @@ public class XgboostCompilateur implements Compilateur{
 		String predictivestr = "";
 		if (predictive != null) {
 			predictivestr = "X = mml_data.drop(columns=[\""+predictive.getColName()+"\"])"+"\r\n";
-		}else {
+		}
+		else {
 			//dernière colonne predictive.getColumn()
 			predictivestr = "X = mml_data.drop(columns=mml_data.columns[len(mml_data.columns)-1])\r\n";
 		}
@@ -52,95 +53,148 @@ public class XgboostCompilateur implements Compilateur{
 		String NameAlgo ="";		
 		String algostr ="";
 		if(algo instanceof SVM) {
-			  //TODO
-			NameAlgo = "SVM";
-			  SVM svm = (SVM)algo;
-			  algostr = "algo = "+"\r\n";
-		}else if(algo instanceof DT) {
-			 DT dt = (DT)algo;
-				NameAlgo = "Decision Tree";
-				int max_depth = dt.getMax_depth();
-				 
-				if(max_depth != 0) {
-					 algostr = "algo = \r\n";
-				}else {
-					 algostr = "algo = \r\n";
+			System.out.println("Cette fonctionnalité n'est pas disponible");
+			break;
+			SVM svm = (SVM)algo;
+			String c = svm.getC();
+			String gamma = svm.getGamma();
+
+			if(c == null) {
+				c = "1.0";
+			}
+			if (gamma== null) {
+				gamma = mkValueInSingleQuote("scale");
+			}
+			
+			if(svm.isClassificationSpecified()) {
+				SVMClassification classification = svm.getSvmclassification();
+				NameAlgo = classification.getLiteral();
+				switch(NameAlgo) {
+					case "C-classification":
+						pythonImport +="from sklearn.svm import SVC"+"\r\n";
+						if(svm.isKernelSpecified()) {
+						algostr = "algo = SVC(C="+c+", kernel="+mkValueInSingleQuote(svm.getKernel().getName())+",gamma="+mkValueInSingleQuote(gamma)+")"+"\r\n";
+						}
+						else {
+							algostr = "algo = SVC(C="+c+",gamma="+gamma+")"+"\r\n";
+						}
+						break;
+					case "nu-classification":
+						pythonImport +="from sklearn.svm import NuSVC"+"\r\n";
+						if(svm.isKernelSpecified()) {
+						algostr = "algo = NuSVC(kernel="+mkValueInSingleQuote(svm.getKernel().getName())+",gamma="+mkValueInSingleQuote(gamma)+")"+"\r\n";
+						}
+						else {
+							algostr = "algo = NuSVC(gamma="+gamma+")"+"\r\n";
+						}
+						break;
+					case "one-classification":
+						pythonImport +="from sklearn.svm import OneClassSVM"+"\r\n";
+						if(svm.isKernelSpecified()) {
+						algostr = "algo = OneClassSVM(kernel="+ mkValueInSingleQuote(svm.getKernel().getName())+",gamma="+mkValueInSingleQuote(gamma)+")"+"\r\n";
+						}
+						else {
+							algostr = "algo = OneClassSVM(gamma="+gamma+")"+"\r\n";
+							
+						}
+						break;
 				}
-		}else if(algo instanceof RandomForest ) {
-			  //TODO
+			}
+		}
+		else if(algo instanceof DT) {
+			DT dt = (DT)algo;
+			int max_depth = dt.getMax_depth();
+			xgboostImport += "from xgboost import XGBClassifier"+"\r\n";
+			NameAlgo = "Decision Tree";
+			if(max_depth != 0) {
+				algostr = "algo = XGBClassifier(max_depth="+max_depth+")"+"\r\n";
+			}
+			else {
+				algostr = "algo = XGBClassifier()"+"\r\n";
+			}
+		}
+		else if(algo instanceof RandomForest ) {
+			System.out.println("Cette fonctionnalité n'est pas disponible");
+			break;
+			xgboostImport += "from sklearn.ensemble import RandomForestClassifier"+"\r\n";
+			algostr = "algo = RandomForestClassifier()\r\n" ;
 			NameAlgo = "Random Forest";
-			  algostr = "algo = "+"\r\n";
-		}else if(algo instanceof LogisticRegression) {
-			  //TODO
+		}
+		else if(algo instanceof LogisticRegression) {
+			xgboostImport += "from xgboost import XGBRegressor"+"\r\n";
+			algostr = "algo = XGBRegressor() "+"\r\n";
 			NameAlgo = "Logistic Regression";
-			  algostr = "algo = "+"\r\n";
 		}
 		
 		int num;
 		String val = "";
 		if (validation.getStratification() instanceof CrossValidation) {
-			  //TODO
-			  num = validation.getStratification().getNumber();
-			  val = ""+"\r\n";
-		}else if (validation.getStratification() instanceof TrainingTest) {
-			  //TODO
-			  num = validation.getStratification().getNumber();
-			  val = ""+"\r\n";
-		
+			 pythonImport += "from sklearn.model_selection import cross_val_predict"+"\r\n";
+			 num = validation.getStratification().getNumber();
+			 val = "y_pred = cross_val_predict(algo, X, Y, cv="+(int) num+")"+"\r\n";
+		}
+		else if (validation.getStratification() instanceof TrainingTest) {
+		  pythonImport += "from sklearn.model_selection import train_test_split"+"\r\n";
+		  num = (validation.getStratification().getNumber())*0.01;
+		  val = "test_size =" +num+"\r\n" + 
+		  		"X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=test_size)"+"\r\n";
+		  val +="algo.fit(X_train,Y_train)"+"\r\n";
+		  val += "y_pred = algo.predict(X_test)"+"\r\n";
+		  val += "Y = Y_test"+"\r\n";
 		}
 		
 		boolean writeInFile = false;
 		String affiche ="";
 		String metric ="";
 		for (ValidationMetric laMetric : metrics) {
-		switch(laMetric.getLiteral()) {
-		  case "balanced_accuracy":
-			  //TODO
-			   metric +=""+"\r\n";
-			   affiche  +=""+"\r\n";
-		    break;
-		  case "recall":
-			  //TODO
-			  metric +=""+"\r\n";
-			  affiche  +=""+"\r\n";
-			  writeInFile = true;
-		    break;
-		  case "precision":
-			  //TODO
-			  metric +=""+"\r\n";
-			  affiche  +=""+"\r\n";
-			    break;
-		  case "F1":
-			  //TODO
-			  metric +=""+"\r\n";
-			  affiche  +=""+"\r\n";
-			    break;
-		  case "accuracy":
-			  //TODO
-			  metric +=""+"\r\n";
-			  affiche  +=""+"\r\n";
-			    break;
-		  case "macro_recall":
-			  //TODO
-			  metric +=""+"\r\n";
-			  affiche  +=""+"\r\n";
-			    break;
-		  case "macro_precision":
-			  //TODO
-			  metric +=""+"\r\n";
-			  affiche  +=""+"\r\n";
-			    break;
-		  case "macro_F1":
-			  //TODO
-			  metric +=""+"\r\n";
-			  affiche  +=""+"\r\n";
-			    break;
-		  case "macro_accuracy":
-			  //TODO
-			  metric +=""+"\r\n";
-			  affiche  +=""+"\r\n";
-			    break;
-		}
+			switch(laMetric.getLiteral()) {
+				case "balanced_accuracy":
+					xgboostImport +="from sklearn.metrics import balanced_accuracy_score"+"\r\n";
+					metric +="balanceA = balanced_accuracy_score(Y, y_pred)"+"\r\n";
+					affiche  +="print(balanceA)";
+					break;
+				case "precision":
+					xgboostImport +="from sklearn.metrics import precision_score"+"\r\n";
+					metric +="precision = precision_score(Y, y_pred, average='micro')"+"\r\n";
+					affiche  +="print(precision)";
+					break;
+				case "recall":
+					xgboostImport +="from sklearn.metrics import recall_score"+"\r\n";
+					metric +="recall = recall_score(Y, y_pred,average='micro' )"+"\r\n";
+					affiche  +="print(recall)"+"\r\n";
+					writeInFile = true;
+					break;
+				case "F1":
+					xgboostImport +="from sklearn.metrics import f1_score"+"\r\n";
+					metric +="f1 = f1_score(Y, y_pred, average='micro')"+"\r\n";
+					affiche  +="print(f1)";
+					break;
+				case "accuracy":
+					xgboostImport +="from sklearn.metrics import accuracy_score"+"\r\n";
+					metric +="accuracy = accuracy_score(Y, y_pred)"+"\r\n";
+					affiche  +="print(accuracy)";
+					break;
+				case "macro_recall":
+					xgboostImport +="from sklearn.metrics import recall_score"+"\r\n";
+					metric +="recall = recall_score(Y, y_pred,average='macro' )"+"\r\n";
+					affiche  +="print(recall)";
+					break;
+				case "macro_precision":
+					xgboostImport +="from sklearn.metrics import precision_score"+"\r\n";
+					metric +="precision = precision_score(Y, y_pred, average='macro')"+"\r\n";
+					affiche  +="print(precision)";
+					break;
+				case "macro_F1":
+					xgboostImport +="from sklearn.metrics import f1_score"+"\r\n";
+					metric +="f1 = f1_score(Y, y_pred, average='macro')"+"\r\n";
+					affiche  +="print(f1)";
+					break;
+				case "macro_accuracy":
+					//TODO
+					metric +=""+"\r\n";
+					affiche  +=""+"\r\n";
+					break;
+			}
 
 		}
 		
@@ -149,16 +203,30 @@ public class XgboostCompilateur implements Compilateur{
 		Files.write(xgBoostCode.getBytes(), new File("mml_Xgboost_"+date+".py"));
 		
 		long debut = System.currentTimeMillis();
-		Process p = Runtime.getRuntime().exec("python mml_Xgboost_"+date+".py");
+		Process p = Runtime.getRuntime().exec("C:\\Program Files (x86)\\Python38-32\\python.exe mml_ScikitLearn_"+date+".py");
 		long fin = System.currentTimeMillis()-debut;
 		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		// start check
+		String line; 
+		String recall ="";
+		while ((line = in.readLine()) != null) {
+			recall = line;
+			System.out.println(recall);
+		}
+		BufferedReader inError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+	
+		while ((line = inError.readLine()) != null) {
+			System.out.println(line);
+		}
+		// end check
+			
 		
 		if (writeInFile) {
 			File myFile = new File("recall.csv");
 			FileOutputStream oFile = new FileOutputStream(myFile, true);
-			oFile.write((dataInput.getFilelocation() +";"+NameAlgo+";ScikitLearn;"+fin+";"+in.read()+"\n").getBytes());
+			oFile.write((dataInput.getFilelocation() +";"+NameAlgo+";XGBoost;"+fin+";"+in.read()+"\n").getBytes());
 			oFile.close();
-			}
+		}
 
 	}
 	
