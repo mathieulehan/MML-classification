@@ -13,6 +13,13 @@ We used the iris dataset, the variable to predict beeing the flower variety (Set
 + XgBoost : An open source software library for implementing Gradient boosting methods in R, Python and Julia.
 
 ###Results
+Please keep in mind that the results we are getting can vary between two computers for the 
+execution time and are based on only one execution for the recall.
+That means the execution time can be higher or lower depending on the hardware but globally, 
+wont change anything in our ranking due to the proportionality relationship.
+For the recall, results can differ from one execution to another (from 0.98 to 0.96 
+to 0.94 to 0.92 in python for both libraries ScikitLearn and XGBoost). But algorithms 
+could be compared over a given number of iterations.
 
 ![Results](report.png)
 
@@ -22,13 +29,6 @@ We used the iris dataset, the variable to predict beeing the flower variety (Set
 + Execution time : R is taking from 6 to 15 seconds (depending on the algorithm) to process iris.csv dataset. Weka is a bit slower, and Scikitlearn is the fastest.
 + Recall : R algorithms have a recall of 0.95. Weka : ..., Scikitlearn : 0.98 and XGBoost 
   : 0.96.
-Keep in mind that the results we are getting can vary between two computers for the 
-execution time and are based on only one execution for the recall.
-That means the execution time can be higher or lower depending on the hardware but globally, 
-wont change anything in our ranking due to the proportionality relationship.
-For the recall, results can differ from one execution to another (from 0.98 to 0.96 
-to 0.94 to 0.92 in python for both libraries ScikitLearn and XGBoost). But algorithms 
-could be compared over a given number of iterations.
 
 **Among machine learning frameworks and algorithms, are some implementations significantly slower/precise than others ?**
 + Sickit-learn seems more precise, with a recall at 98 percent for the training test and SVM, Ramdom Forest, Logistic Regression. It means that it predicts in 98 percent of cases the right variety of flower
