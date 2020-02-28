@@ -1,7 +1,7 @@
 # MML-classification
 ## multi machine learning language (for classification) 
 
-###Introduction
+### Introduction
 
 **Datasets**
 We used the iris dataset, the variable to predict beeing the flower variety (Setosa, Versicolor or Virginica) using sepal length & width and petal length & width.
@@ -12,8 +12,9 @@ We used the iris dataset, the variable to predict beeing the flower variety (Set
 + Weka : A suite of machine learning software written in Java.
 + XgBoost : An open source software library for implementing Gradient boosting methods in R, Python and Julia.
 
-###Results
-Please keep in mind that the results we are getting can vary between two computers for the 
+### Results
+
++ Please keep in mind that the results we are getting can vary between two computers for the 
 execution time and are based on only one execution for the recall.
 That means the execution time can be higher or lower depending on the hardware but globally, 
 wont change anything in our ranking due to the proportionality relationship.
